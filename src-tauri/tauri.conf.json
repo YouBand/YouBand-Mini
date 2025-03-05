@@ -12,9 +12,12 @@
   "app": {
     "windows": [
       {
-        "title": "youband-mini",
-        "width": 800,
-        "height": 600
+        "title": "YouBand",
+        "width": 1200,
+        "height": 800,
+        "center": true,
+        "transparent": true,
+        "decorations": false
       }
     ],
     "security": {
@@ -30,6 +33,14 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "windows": {
+      "wix": {
+        "language": "zh-CN"
+      },
+      "webviewInstallMode": {
+        "type": "embedBootstrapper"
+      }
+    }
   }
 }

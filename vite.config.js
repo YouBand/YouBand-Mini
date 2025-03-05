@@ -3,6 +3,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import vue from '@vitejs/plugin-vue'
+import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
@@ -28,6 +29,11 @@ export default defineConfig(async () => ({
     hmr: true,
     watch: {
       ignored: ['**/src-tauri/**']
+    }
+  },
+  resolve: {
+    alias: {
+      '@': `${path.resolve(__dirname, process.cwd())}/src`
     }
   }
 }))
