@@ -17,6 +17,31 @@ const router = createRouter({
           path: 'dashboard',
           name: 'dashboard',
           component: () => import('@/views/mainWindow/home/Dashboard.vue')
+        },
+        {
+          path: 'robot',
+          name: 'robot',
+          component: () => import('@/views/mainWindow/home/Dashboard.vue')
+        },
+        {
+          path: 'chat',
+          name: 'chat',
+          component: () => import('@/views/mainWindow/home/Dashboard.vue')
+        },
+        {
+          path: 'role',
+          name: 'role',
+          component: () => import('@/views/mainWindow/home/Dashboard.vue')
+        },
+        {
+          path: 'config',
+          name: 'config',
+          component: () => import('@/views/mainWindow/home/Dashboard.vue')
+        },
+        {
+          path: 'set',
+          name: 'set',
+          component: () => import('@/views/mainWindow/home/Dashboard.vue')
         }
       ]
     }
