@@ -24,7 +24,7 @@
         </div>
       </div>
     </div>
-    <div class="flex w-full h-full">
+    <div class="home-content">
       <div :class="['nav-left', isCollapsed ? 'w-[60px]' : 'w-[200px]']">
         <div class="nva-left__items">
           <div
@@ -73,7 +73,7 @@
           </div>
         </div>
       </div>
-      <div>
+      <div class="w-full h-full">
         <RouterView />
       </div>
     </div>
@@ -155,6 +155,7 @@ const handlerChangeTheme = () => {
     padding: 0 10px;
     user-select: none;
     justify-content: space-between;
+    flex-shrink: 0;
 
     .nav-title__logo {
       display: flex;
@@ -204,56 +205,94 @@ const handlerChangeTheme = () => {
     }
   }
 
-  .nav-left {
+  .home-content {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background-color: var(--nav-bg);
-    height: 100%;
-    border-right: 1px var(--divider-bg) solid;
-    color: var(--minor-text-color);
-    padding: 10px;
+    flex: 1;
     overflow: hidden;
-    @apply transition-all duration-300 ease-in-out;
 
-    .nva-left__items {
+    .nav-left {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      justify-content: space-between;
+      background-color: var(--nav-bg);
+      height: 100%;
+      border-right: 1px var(--divider-bg) solid;
+      color: var(--minor-text-color);
+      padding: 10px;
+      overflow: hidden;
+      @apply transition-all duration-300 ease-in-out;
+      flex-shrink: 0;
 
-      .nav-left__item {
+      .nva-left__items {
         display: flex;
-        align-items: center;
-        height: 40px;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-        font-weight: 600;
-        padding: 0 10px;
-        user-select: none;
+        flex-direction: column;
+        gap: 10px;
 
-        .nav-left__item--icon {
-          font-size: 20px;
-          flex-shrink: 0;
-        }
+        .nav-left__item {
+          display: flex;
+          align-items: center;
+          height: 40px;
+          border-radius: 5px;
+          font-size: 16px;
+          cursor: pointer;
+          font-weight: 600;
+          padding: 0 10px;
+          user-select: none;
 
-        &.active {
-          color: #fff;
-          background-color: rgba(var(--primary-color));
-        }
+          .nav-left__item--icon {
+            font-size: 20px;
+            flex-shrink: 0;
+          }
 
-        &:not(.active):hover {
-          color: rgba(var(--primary-color));
-          background-color: rgba(var(--primary-color), 0.1);
+          &.active {
+            color: #fff;
+            background-color: rgba(var(--primary-color));
+          }
+
+          &:not(.active):hover {
+            color: rgba(var(--primary-color));
+            background-color: rgba(var(--primary-color), 0.1);
+          }
         }
       }
-    }
 
-    .nva-left__bottom-items {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      .nva-left__bottom-items {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
 
+        .nav-left__bottom-item {
+          display: flex;
+          align-items: center;
+          height: 40px;
+          border-radius: 5px;
+          font-size: 16px;
+          cursor: pointer;
+          font-weight: 600;
+          padding: 0 10px;
+          user-select: none;
+
+          .nav-left__bottom-item--icon {
+            font-size: 20px;
+            flex-shrink: 0;
+          }
+
+          &.sun {
+            color: rgb(250, 204, 21);
+
+            &:hover {
+              background-color: rgba(250, 204, 21, 0.1);
+            }
+          }
+
+          &:not(.sun):hover {
+            color: rgba(var(--primary-color));
+            background-color: rgba(var(--primary-color), 0.1);
+          }
+        }
+      }
+
+      .nav-left__item,
       .nav-left__bottom-item {
         display: flex;
         align-items: center;
@@ -265,47 +304,16 @@ const handlerChangeTheme = () => {
         padding: 0 10px;
         user-select: none;
 
+        .nav-left__item--icon,
         .nav-left__bottom-item--icon {
           font-size: 20px;
           flex-shrink: 0;
         }
 
-        &.sun {
-          color: rgb(250, 204, 21);
-
-          &:hover {
-            background-color: rgba(250, 204, 21, 0.1);
-          }
+        .nav-left__item--label,
+        .nav-left__bottom-item--label {
+          @apply whitespace-nowrap transition-opacity duration-200;
         }
-
-        &:not(.sun):hover {
-          color: rgba(var(--primary-color));
-          background-color: rgba(var(--primary-color), 0.1);
-        }
-      }
-    }
-
-    .nav-left__item,
-    .nav-left__bottom-item {
-      display: flex;
-      align-items: center;
-      height: 40px;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-      font-weight: 600;
-      padding: 0 10px;
-      user-select: none;
-
-      .nav-left__item--icon,
-      .nav-left__bottom-item--icon {
-        font-size: 20px;
-        flex-shrink: 0;
-      }
-
-      .nav-left__item--label,
-      .nav-left__bottom-item--label {
-        @apply whitespace-nowrap transition-opacity duration-200;
       }
     }
   }

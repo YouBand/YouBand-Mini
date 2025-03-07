@@ -23,3 +23,18 @@ html {
     height: 100%;
     font-family: 'Alimama', Helvetica, sans-serif;
 }
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: #94a3b8;
+
+}
