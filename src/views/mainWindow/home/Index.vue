@@ -12,13 +12,16 @@
         </div>
         <n-divider vertical />
         <div class="nav-title__system">
-          <icon-hover-button type="minor">
+          <icon-hover-button type="minor" @click="handleMinimize">
             <Icon icon="carbon:subtract" />
           </icon-hover-button>
-          <icon-hover-button type="minor" style="font-size: 20px">
-            <Icon icon="tabler:maximize" />
+          <icon-hover-button
+            type="minor"
+            style="font-size: 20px"
+            @click="() => (isMaximize ? handleUnMaximize() : handleMaximize())">
+            <Icon :icon="isMaximize ? 'tabler:minimize' : 'tabler:maximize'" />
           </icon-hover-button>
-          <icon-hover-button type="error">
+          <icon-hover-button type="error" @click="handleHide">
             <Icon icon="carbon:close" />
           </icon-hover-button>
         </div>
@@ -84,15 +87,15 @@ import { useThemeStore } from '@/stores/useThemeStore.js'
 import { Icon } from '@iconify/vue'
 import IconHoverButton from '@/components/IconHoverButton.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { WebviewWindow } from '@tauri-apps/api/webviewWindow'
 
 const route = useRoute()
 const router = useRouter()
 const isCollapsed = ref(false)
-
-const toggleMenu = () => {
-  isCollapsed.value = !isCollapsed.value
-}
+const themeStore = useThemeStore()
+const isMaximize = ref(false)
+let unResize
 
 const navigations = [
   {
@@ -133,10 +136,44 @@ const navigations = [
   }
 ]
 
-const themeStore = useThemeStore()
+const handleMinimize = () => {
+  WebviewWindow.getCurrent().minimize()
+}
+
+const handleClose = () => {
+  WebviewWindow.getCurrent().close()
+}
+
+const handleHide = () => {
+  WebviewWindow.getCurrent().hide()
+}
+
+const handleMaximize = () => {
+  WebviewWindow.getCurrent().maximize()
+}
+
+const handleUnMaximize = () => {
+  WebviewWindow.getCurrent().unmaximize()
+}
+
+const toggleMenu = () => {
+  isCollapsed.value = !isCollapsed.value
+}
+
 const handlerChangeTheme = () => {
   themeStore.setTheme(themeStore.theme === 'light' ? 'dark' : 'light')
 }
+
+onMounted(() => {
+  let window = WebviewWindow.getCurrent()
+  unResize = window.listen('tauri://resize', async function () {
+    isMaximize.value = await window.isMaximized()
+  })
+})
+
+onUnmounted(() => {
+  unResize()
+})
 </script>
 <style scoped lang="scss">
 .home-container {
