@@ -13,12 +13,25 @@
     "windows": [
       {
         "title": "YouBand",
+        "label": "home",
         "width": 1200,
         "height": 850,
         "minWidth": 700,
         "minHeight": 600,
         "center": true,
         "transparent": true,
+        "decorations": false
+      },
+      {
+        "label": "tray",
+        "url": "/tray",
+        "resizable": false,
+        "center": false,
+        "visible": false,
+        "width": 120,
+        "height": 40,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
         "decorations": false
       }
     ],

@@ -8,6 +8,11 @@ const router = createRouter({
       redirect: '/home'
     },
     {
+      path: '/tray',
+      name: 'tray',
+      component: () => import('@/views/trayWindow/Tray.vue')
+    },
+    {
       path: '/home',
       name: 'home',
       component: () => import('@/views/mainWindow/home/Index.vue'),
