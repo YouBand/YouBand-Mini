@@ -58,7 +58,7 @@
             :show-indicator="false"
             :percentage="20"
             color="rgb(34 ,197, 94, 0.8)"
-            rail-color="var(--divider-bg)" />
+            rail-color="var(--card-bg)" />
         </div>
       </div>
       <div class="dash-message__card">
@@ -77,7 +77,7 @@
             :show-indicator="false"
             :percentage="20"
             color="rgb(239, 68, 68, 0.8)"
-            rail-color="var(--divider-bg)" />
+            rail-color="var(--card-bg)" />
         </div>
       </div>
     </div>
@@ -99,7 +99,7 @@
             :show-indicator="false"
             :percentage="20"
             color="rgb(var(--primary-color))"
-            rail-color="var(--divider-bg)" />
+            rail-color="var(--card-bg)" />
         </div>
         <div class="dash-system__bottom-info">
           <div>核心数：8</div>
@@ -122,7 +122,7 @@
             :show-indicator="false"
             :percentage="20"
             color="rgb(var(--primary-color))"
-            rail-color="var(--divider-bg)" />
+            rail-color="var(--card-bg)" />
         </div>
         <div class="dash-system__bottom-info">
           <div>已用：8GB</div>
@@ -145,7 +145,7 @@
             :show-indicator="false"
             :percentage="20"
             color="rgb(var(--primary-color))"
-            rail-color="var(--divider-bg)" />
+            rail-color="var(--card-bg)" />
         </div>
         <div class="dash-system__bottom-info">
           <div>已用：81GB</div>
@@ -399,7 +399,7 @@ const chartOption = computed(() => {
 
       .dash-info__list-card {
         height: 52px;
-        background-color: var(--divider-bg);
+        background-color: var(--card-bg);
         border-radius: 8px;
         display: flex;
         justify-content: space-between;
@@ -428,7 +428,7 @@ const chartOption = computed(() => {
       .dash-info__details-info {
         padding: 10px 20px;
         display: flex;
-        border-bottom: 1px var(--divider-bg) solid;
+        border-bottom: 1px var(--card-bg) solid;
       }
 
       .dash-info__details-chart {

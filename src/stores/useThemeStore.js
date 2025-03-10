@@ -7,7 +7,7 @@ export const useThemeStore = defineStore('theme', {
   actions: {
     async setTheme(newTheme) {
       this.theme = newTheme
-      document.documentElement.setAttribute('data-theme', newTheme)
+      document.body.setAttribute('data-theme', newTheme)
     }
   },
   persist: true

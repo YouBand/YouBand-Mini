@@ -186,7 +186,7 @@ onUnmounted(() => {
     height: 60px;
     width: 100%;
     background-color: var(--nav-bg);
-    border-bottom: 1px var(--divider-bg) solid;
+    border-bottom: 1px var(--card-bg) solid;
     display: flex;
     align-items: center;
     padding: 0 10px;
@@ -253,7 +253,7 @@ onUnmounted(() => {
       justify-content: space-between;
       background-color: var(--nav-bg);
       height: 100%;
-      border-right: 1px var(--divider-bg) solid;
+      border-right: 1px var(--card-bg) solid;
       color: var(--minor-text-color);
       padding: 10px;
       overflow: hidden;

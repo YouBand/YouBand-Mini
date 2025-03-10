@@ -1,7 +1,7 @@
 <template>
   <div class="robot">
     <div class="flex justify-between items-center">
-      <div class="robot-title__h1">机器人管理</div>
+      <div class="robot-title__h1">机器人仓库</div>
       <n-button type="primary" size="large">
         <template #icon>
           <Icon icon="tabler:plus"></Icon>

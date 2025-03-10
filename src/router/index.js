@@ -36,7 +36,7 @@ const router = createRouter({
         {
           path: 'role',
           name: 'role',
-          component: () => import('@/views/mainWindow/home/Dashboard.vue')
+          component: () => import('@/views/mainWindow/home/Role.vue')
         },
         {
           path: 'config',

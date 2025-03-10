@@ -35,13 +35,13 @@ const props = defineProps({
   &.theme {
     &:hover {
       color: rgba(var(--primary-color));
-      background-color: var(--divider-bg);
+      background-color: var(--card-bg);
     }
   }
 
   &.theme-error {
     &:hover {
-      background-color: var(--divider-bg);
+      background-color: var(--card-bg);
       color: var(--error-color);
     }
   }

@@ -3,8 +3,8 @@
   --n-suffix-text-color: var(--minor-text-color);
   --n-placeholder-color: var(--minor-text-color);
   --n-text-color: var(--primary-text-color);
-  --n-color-focus: var(--divider-bg);
-  background-color: var(--divider-bg);
+  --n-color-focus: var(--card-bg);
+  background-color: var(--card-bg);
   border-radius: 8px;
   font-size: 16px;
 }
@@ -12,7 +12,7 @@
 //下拉选择
 .n-select .n-base-selection {
   --n-placeholder-color: var(--minor-text-color) !important;
-  --n-color: var(--divider-bg) !important;
+  --n-color: var(--card-bg) !important;
   --n-color-active: var(--divider) !important;
   --n-text-color: var(--primary-text-color) !important;
 }
@@ -22,8 +22,8 @@
   --n-color: var(--nav-bg) !important;
   --n-text-color: var(--primary-text-color) !important;
   --n-option-text-color: var(--minor-text-color) !important;
-  --n-option-color-pending: var(--divider-bg) !important;
-  --n-option-color-active-pending: var(--divider-bg) !important;
+  --n-option-color-pending: var(--card-bg) !important;
+  --n-option-color-active-pending: var(--card-bg) !important;
 }
 
 //标签

@@ -1,10 +1,10 @@
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
-    <n-dialog-provider>
-      <div class="app-container" :data-theme="themeStore.theme">
+    <div class="app-container">
+      <n-dialog-provider>
         <RouterView />
-      </div>
-    </n-dialog-provider>
+      </n-dialog-provider>
+    </div>
   </n-config-provider>
 </template>
 
@@ -12,6 +12,9 @@
 import { useThemeStore } from '@/stores/useThemeStore.js'
 
 const themeStore = useThemeStore()
+onBeforeMount(() => {
+  themeStore.setTheme(themeStore.theme)
+})
 
 const themeOverrides = {
   common: {

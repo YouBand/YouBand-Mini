@@ -1,6 +1,6 @@
 @import './themes/light.css';
 @import './themes/dark.css';
-@import 'themes/naive.scss';
+@import './themes/naive.scss';
 
 @tailwind base;
 @tailwind components;
@@ -37,6 +37,6 @@ html {
 
 ::-webkit-scrollbar-thumb {
     border-radius: 3px;
-    background: var(--divider-bg);
+    background: var(--card-bg);
     border: 1px rgba(0, 0, 0, 0.1) solid;;
 }
