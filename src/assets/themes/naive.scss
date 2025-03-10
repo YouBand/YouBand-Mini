@@ -1,0 +1,49 @@
+//输入框
+.n-input .n-input-wrapper {
+  --n-suffix-text-color: var(--minor-text-color);
+  --n-placeholder-color: var(--minor-text-color);
+  --n-text-color: var(--primary-text-color);
+  --n-color-focus: var(--divider-bg);
+  background-color: var(--divider-bg);
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+//下拉选择
+.n-select .n-base-selection {
+  --n-placeholder-color: var(--minor-text-color) !important;
+  --n-color: var(--divider-bg) !important;
+  --n-color-active: var(--divider) !important;
+  --n-text-color: var(--primary-text-color) !important;
+}
+
+//下拉菜单
+.n-base-select-menu {
+  --n-color: var(--nav-bg) !important;
+  --n-text-color: var(--primary-text-color) !important;
+  --n-option-text-color: var(--minor-text-color) !important;
+  --n-option-color-pending: var(--divider-bg) !important;
+  --n-option-color-active-pending: var(--divider-bg) !important;
+}
+
+//标签
+.n-tag {
+  --n-border-radius: 100px !important;
+}
+
+//对话框
+.n-dialog {
+  background: var(--nav-bg) !important;
+  --n-title-text-color: var(--primary-text-color) !important;
+  --n-content-margin: 16px 0 !important;
+  --n-text-color: var(--minor-text-color) !important;
+  --n-font-size: 16px !important;
+
+  .n-button {
+    --n-text-color: var(--minor-text-color) !important;
+  }
+
+  .n-button--error-type {
+    --n-text-color: #fff !important;
+  }
+}

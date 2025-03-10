@@ -1,9 +1,11 @@
 @import './themes/light.css';
 @import './themes/dark.css';
+@import 'themes/naive.scss';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 @font-face {
     font-family: 'Alimama';
@@ -35,6 +37,6 @@ html {
 
 ::-webkit-scrollbar-thumb {
     border-radius: 3px;
-    background: #94a3b8;
-
+    background: var(--divider-bg);
+    border: 1px rgba(0, 0, 0, 0.1) solid;;
 }

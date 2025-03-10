@@ -162,14 +162,14 @@
             <doudone-label size="32px" font-size="14px" color="primary">QQ</doudone-label>
             <div class="text-[16px] text-[var(--minor-text-color)] ml-[10px]">我的QQ机器人</div>
           </div>
-          <div class="dash-info__list-card--status">在线</div>
+          <n-tag size="small" :color="{ color: '#22C55E19', textColor: '#22C55E' }"> 在线</n-tag>
         </div>
         <div class="dash-info__list-card">
           <div class="flex items-center">
             <doudone-label size="32px" font-size="14px" color="primary">WX</doudone-label>
             <div class="text-[16px] text-[var(--minor-text-color)] ml-[10px]">我的微信机器人</div>
           </div>
-          <div class="dash-info__list-card--status">在线</div>
+          <n-tag size="small" :color="{ color: '#22C55E19', textColor: '#22C55E' }"> 在线</n-tag>
         </div>
       </div>
       <div class="dash-info__robot-details">
@@ -181,7 +181,7 @@
               <div class="flex justify-center items-center mt-[4px] gap-[20px] text-[14px]">
                 <div><span class="text-[var(--minor-text-color)] mr-[4px]">角色:</span>莉莉娅</div>
                 <div><span class="text-[var(--minor-text-color)] mr-[4px]">模型:</span>DeepSeek</div>
-                <div class="dash-info__list-card--status">在线</div>
+                <n-tag size="small" :color="{ color: '#22C55E19', textColor: '#22C55E' }"> 在线</n-tag>
               </div>
             </div>
           </div>
@@ -415,20 +415,6 @@ const chartOption = computed(() => {
           background-color: rgba(var(--primary-color), 0.05);
         }
       }
-    }
-
-    .dash-info__list-card--status {
-      height: 20px;
-      width: 40px;
-      border-radius: 40px;
-      font-size: 12px;
-      color: rgb(34, 197, 94);
-      background-color: rgb(34, 197, 94, 0.1);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: 500;
-      user-select: none;
     }
 
     .dash-info__robot-details {

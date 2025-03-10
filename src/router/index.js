@@ -26,7 +26,7 @@ const router = createRouter({
         {
           path: 'robot',
           name: 'robot',
-          component: () => import('@/views/mainWindow/home/Dashboard.vue')
+          component: () => import('@/views/mainWindow/home/Robot.vue')
         },
         {
           path: 'chat',

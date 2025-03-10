@@ -1,5 +1,5 @@
 <template>
-  <div class="icon-button" :class="[props.class, props.type]" :style="props.style">
+  <div class="icon-button" :class="[props.type, props.class]" :style="props.style">
     <slot></slot>
   </div>
 </template>
@@ -19,6 +19,7 @@ const props = defineProps({
   align-items: center;
   border-radius: 5px;
   font-size: 26px;
+  cursor: pointer;
 
   &:hover {
     background-color: rgba(var(--primary-color));
@@ -28,6 +29,20 @@ const props = defineProps({
     &:hover {
       color: #000;
       background-color: #f3f5fe;
+    }
+  }
+
+  &.theme {
+    &:hover {
+      color: rgba(var(--primary-color));
+      background-color: var(--divider-bg);
+    }
+  }
+
+  &.theme-error {
+    &:hover {
+      background-color: var(--divider-bg);
+      color: var(--error-color);
     }
   }
 

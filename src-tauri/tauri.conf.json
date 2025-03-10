@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "youband-mini",
+  "productName": "YouBand-Mini",
   "version": "0.1.0",
   "identifier": "chat.youband",
   "build": {
@@ -14,6 +14,7 @@
       {
         "title": "YouBand",
         "label": "home",
+        "url": "/home/dashboard",
         "width": 1200,
         "height": 850,
         "minWidth": 700,
