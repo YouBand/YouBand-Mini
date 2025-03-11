@@ -39,9 +39,9 @@ const router = createRouter({
           component: () => import('@/views/mainWindow/home/Role.vue')
         },
         {
-          path: 'config',
-          name: 'config',
-          component: () => import('@/views/mainWindow/home/Dashboard.vue')
+          path: 'model',
+          name: 'model',
+          component: () => import('@/views/mainWindow/home/Model.vue')
         },
         {
           path: 'set',

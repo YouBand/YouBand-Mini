@@ -117,10 +117,10 @@ const navigations = [
     activeIcon: 'solar:chat-line-bold'
   },
   {
-    label: '配置',
-    path: '/home/config',
-    icon: 'solar:code-file-line-duotone',
-    activeIcon: 'solar:code-file-bold'
+    label: '模型',
+    path: '/home/model',
+    icon: 'solar:black-hole-3-line-duotone',
+    activeIcon: 'solar:black-hole-line-duotone'
   },
   {
     label: '人物角色',
