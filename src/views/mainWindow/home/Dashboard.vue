@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard">
+  <div class="dashboard-container">
     <div class="dash-title">
       <div class="dash-title__h1">Heath，欢迎回来</div>
       <div class="dash-title__h2">这是您的实时数据概览</div>
@@ -280,7 +280,7 @@ const chartOption = computed(() => {
 })
 </script>
 <style scoped lang="scss">
-.dashboard {
+.dashboard-container {
   height: 100%;
   max-width: 1280px;
   margin-left: auto;

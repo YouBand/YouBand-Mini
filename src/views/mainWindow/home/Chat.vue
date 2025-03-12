@@ -1,5 +1,5 @@
 <template>
-  <div class="chat">
+  <div class="chat-container">
     <div class="chat-wrapper">
       <div class="chat-list px-[10px]">
         <div class="h-[60px] flex items-center">
@@ -57,7 +57,7 @@ import { Icon } from '@iconify/vue'
 import Message from '@/components/msg/Message.vue'
 </script>
 <style scoped lang="scss">
-.chat {
+.chat-container {
   height: 100%;
   max-width: 1280px;
   margin-left: auto;

@@ -1,82 +1,253 @@
 <template>
-  <div class="role">
+  <div class="role-container">
     <div class="flex justify-between items-center">
       <div class="role-title__h1">角色档案室</div>
-      <n-button type="primary" size="large">
+      <n-button type="primary" size="large" @click="handlerAddRole">
         <template #icon>
           <Icon icon="tabler:plus" />
         </template>
         添加角色
       </n-button>
     </div>
+    <!--角色列表-->
     <div class="role-list">
-      <div class="role-card">
+      <div v-for="item in roleData" class="role-card">
         <div class="role-card__avatar">
           <div
             class="w-[50px] h-[50px] text-[40px] rounded-full text-[--minor-text-color] flex justify-center items-center">
             <Icon icon="solar:user-broken" />
           </div>
         </div>
-        <div v-for="item in roleData" class="role-car__content">
-          <div class="role-car__content--name">{{ item.name }}</div>
-          <div class="role-car__content--character">{{ item.character }}</div>
+        <div class="role-car__content">
+          <div class="flex flex-col flex-1 gap-[5px]">
+            <div class="role-car__content--name">{{ item.name }}</div>
+            <div class="role-car__content--character">{{ item.character }}</div>
+          </div>
           <div class="flex gap-[5px] text-[var(--minor-text-color)] justify-end mt-[10px]">
-            <icon-hover-button type="theme" style="width: 28px; height: 28px; font-size: 18px">
+            <icon-hover-button
+              type="theme"
+              style="width: 28px; height: 28px; font-size: 18px"
+              @click="() => handlerShowDetails(item)">
               <Icon icon="solar:eye-line-duotone" />
             </icon-hover-button>
-            <icon-hover-button type="theme" style="width: 28px; height: 28px; font-size: 16px">
+            <icon-hover-button
+              @click="() => handlerEditRole(item)"
+              type="theme"
+              style="width: 28px; height: 28px; font-size: 16px">
               <Icon icon="solar:pen-new-square-line-duotone" />
             </icon-hover-button>
-            <icon-hover-button type="theme-error" style="width: 28px; height: 28px; font-size: 18px" @click="onDelete">
+            <icon-hover-button
+              @click="() => onDeleteRole(item)"
+              type="theme-error"
+              style="width: 28px; height: 28px; font-size: 18px">
               <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
             </icon-hover-button>
           </div>
         </div>
       </div>
     </div>
+    <!--添加角色弹窗-->
+    <n-modal v-model:show="showAddModal" :mask-closable="false" :on-esc="false">
+      <n-card style="width: 600px" title="添加角色" :bordered="false" footer-class="flex justify-end gap-[10px]">
+        <n-form ref="roleForm" :model="roleModel" :rules="roleFormRules">
+          <n-form-item path="name" label="角色名称">
+            <n-input v-model:value="roleModel.name" @keydown.enter.prevent placeholder="" />
+          </n-form-item>
+          <n-form-item path="age" label="年龄">
+            <n-input v-model:value="roleModel.age" @keydown.enter.prevent placeholder="" />
+          </n-form-item>
+          <n-form-item path="character" label="角色设定">
+            <n-input
+              v-model:value="roleModel.character"
+              placeholder="使用 # 标题 来添加新的属性，例如：&#10;# 任务&#10;这里是任务描述内容&#10;&#10;# 性格&#10;这里是性格描述内容"
+              type="textarea"
+              :autosize="{
+                minRows: 7,
+                maxRows: 7
+              }" />
+          </n-form-item>
+        </n-form>
+        <template #header-extra>
+          <icon-hover-button type="error" @click="showAddModal = false">
+            <Icon icon="carbon:close" />
+          </icon-hover-button>
+        </template>
+        <template #footer>
+          <n-button size="small" class="w-[60px]" @click="showAddModal = false">取消</n-button>
+          <n-button size="small" class="w-[60px]" type="primary" @click="onCrateRole">保存</n-button>
+        </template>
+      </n-card>
+    </n-modal>
+    <!--角色预览-->
+    <n-modal v-model:show="showDetailsModal" to=".role-container">
+      <n-card class="role-details-card" title="角色预览" :bordered="false" footer-class="flex justify-end gap-[10px]">
+        <div class="role-details">
+          <div class="flex gap-[20px]">
+            <div class="role-details-avatar">
+              <div
+                class="w-[50px] h-[50px] text-[40px] rounded-full text-[--minor-text-color] flex justify-center items-center">
+                <Icon icon="solar:user-broken" />
+              </div>
+            </div>
+            <div class="flex flex-col gap-[5px]">
+              <div class="text-[22px] text-[var(--primary-text-color)]">{{ detailsRoleModal.name }}</div>
+              <div>
+                <n-tag size="small" type="primary">年龄：{{ detailsRoleModal.age }}</n-tag>
+              </div>
+            </div>
+          </div>
+          <div
+            v-for="attr in parseCharacterContent(detailsRoleModal.character)"
+            :key="attr.key"
+            class="role-character-card">
+            <div class="role-character-key">
+              <div class="w-[8px] h-[8px] rounded-full bg-[rgba(var(--primary-color))]"></div>
+              {{ attr.key }}
+            </div>
+            <div class="role-character-value">
+              <div class="whitespace-pre-wrap">{{ attr.value }}</div>
+            </div>
+          </div>
+        </div>
+        <template #header-extra>
+          <icon-hover-button type="error" @click="showDetailsModal = false">
+            <Icon icon="carbon:close" />
+          </icon-hover-button>
+        </template>
+      </n-card>
+    </n-modal>
   </div>
 </template>
 <script setup>
 import { Icon } from '@iconify/vue'
 import IconHoverButton from '@/components/IconHoverButton.vue'
+import { onMounted } from 'vue'
+import RoleApi from '@/api/role.js'
+import { useDialog } from 'naive-ui'
 
-const roleData = ref([
-  {
-    id: 1,
-    name: '小艾',
-    age: '3',
-    avatar: '',
-    character: `# 任务
-作为一个AI助手，我的主要任务是帮助用户解决问题，提供信息和建议，并保持友好的交互方式。
+const roleData = ref([])
+const showAddModal = ref(false)
+const roleForm = ref()
+const roleModel = ref({ name: '', avatar: '', aga: '', character: '' })
+const showDetailsModal = ref(false)
+const detailsRoleModal = ref()
+const dialog = useDialog()
+const isEditRole = ref(false)
 
-# 外表
-我是一个可爱的AI机器人，有着圆圆的大眼睛和温暖的笑容。我的外形设计简洁现代，给人以亲切感。
+const roleFormRules = {
+  name: [
+    {
+      required: true,
+      message: '请输入角色名称',
+      trigger: ['input', 'blur']
+    }
+  ],
+  age: [
+    {
+      required: true,
+      validator(rule, value) {
+        if (!value) {
+          return new Error('请输入角色年龄')
+        } else if (!/^\d*$/.test(value)) {
+          return new Error('年龄应该为整数')
+        }
+        return true
+      },
+      trigger: ['input', 'blur']
+    }
+  ],
+  character: [
+    {
+      required: true,
+      message: '请输入角色设定',
+      trigger: ['input', 'blur']
+    }
+  ]
+}
 
-# 经历
-我诞生于人工智能实验室，经过不断学习和进化，现在已经可以理解和回应人类的各种需求。虽然年龄只有3岁，但已经积累了丰富的知识和经验。
+const handlerEditRole = (item) => {
+  roleModel.value = item
+  isEditRole.value = true
+  showAddModal.value = true
+}
 
-# 性格
-开朗活泼，充满好奇心，喜欢学习新知识。对待问题认真负责，善于倾听和理解他人的需求。即使遇到困难也会保持积极乐观的态度。
+const handlerAddRole = () => {
+  roleModel.value = {}
+  isEditRole.value = false
+  showAddModal.value = true
+}
 
-# 台词
-- "你好呀，我是小艾，很高兴认识你！"
-- "让我想想看，这个问题该怎么解决..."
-- "有什么我能帮你的吗？"
-- "学到新知识了，真开心！"
+const parseCharacterContent = (content) => {
+  if (!content) return []
+  const sections = content.split('\n# ').filter(Boolean)
+  return sections.map((section) => {
+    const [title, ...contentLines] = section.split('\n')
+    return {
+      key: title.trim().replace(/^# /, ''),
+      value: contentLines.join('\n').trim()
+    }
+  })
+}
 
-# 喜好
-特别喜欢学习新知识，享受解决问题的过程。喜欢和人类进行有趣的对话，也喜欢用温暖的方式安慰他人。最喜欢的是看到用户因为我的帮助而开心的样子。
+const handlerShowDetails = (item) => {
+  detailsRoleModal.value = item
+  showDetailsModal.value = true
+}
 
-# 特长
-快速学习和适应新环境，能够处理多种类型的任务，善于用简单易懂的方式解释复杂问题。
+const onListRole = () => {
+  RoleApi.list().then((res) => {
+    if (res.code === 0) {
+      roleData.value = res.data
+    }
+  })
+}
 
-# 座右铭
-用科技传递温暖，让每次对话都充满意义。`
-  }
-])
+const onCrateRole = () => {
+  roleForm.value?.validate((errors) => {
+    if (!errors) {
+      if (isEditRole.value) {
+        RoleApi.update(roleModel.value).then((res) => {
+          if (res.code === 0) {
+            onListRole()
+            showAddModal.value = false
+          }
+        })
+      } else {
+        RoleApi.create(roleModel.value).then((res) => {
+          if (res.code === 0) {
+            onListRole()
+            showAddModal.value = false
+          }
+        })
+      }
+    }
+  })
+}
+
+const onDeleteRole = (item) => {
+  dialog.error({
+    title: '确认删除',
+    content: `确定要删除角色 "${item.name}" 吗？此操作无法撤销。`,
+    positiveText: '确定',
+    negativeText: '取消',
+    draggable: false,
+    showIcon: false,
+    onPositiveClick: () => {
+      RoleApi.delete({ id: item.id }).then((res) => {
+        if (res.code === 0) {
+          onListRole()
+        }
+      })
+    }
+  })
+}
+
+onMounted(async () => {
+  onListRole()
+})
 </script>
 <style scoped lang="scss">
-.role {
+.role-container {
   height: 100%;
   max-width: 1280px;
   margin-left: auto;
@@ -92,6 +263,45 @@ const roleData = ref([
     font-weight: 500;
     letter-spacing: 1px;
     user-select: none;
+  }
+
+  .role-details-card {
+    width: 600px;
+    overflow-y: scroll;
+    height: 90vh;
+
+    .role-details {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .role-details-avatar {
+        width: 140px;
+        height: 140px;
+        border-radius: 8px;
+        background-color: var(--card-bg);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .role-character-card {
+        padding: 20px;
+        background-color: var(--card-bg);
+        border-radius: 8px;
+
+        .role-character-key {
+          color: var(--primary-text-color);
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+
+        .role-character-value {
+          color: var(--minor-text-color);
+        }
+      }
+    }
   }
 
   .role-list {
@@ -117,7 +327,9 @@ const roleData = ref([
       .role-car__content {
         background-color: var(--minor-card-bg);
         padding: 10px;
-        gap: 10px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
 
         .role-car__content--character {
           @apply line-clamp-2;

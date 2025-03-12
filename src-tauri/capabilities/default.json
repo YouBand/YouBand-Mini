@@ -28,6 +28,8 @@
     "core:window:allow-set-always-on-top",
     "core:window:allow-set-size",
     "core:window:allow-unmaximize",
-    "process:default"
+    "process:default",
+    "sql:default",
+    "sql:allow-execute"
   ]
 }

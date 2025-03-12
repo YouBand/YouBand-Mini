@@ -1,5 +1,5 @@
 <template>
-  <div class="robot">
+  <div class="robot-container">
     <div class="flex justify-between items-center">
       <div class="robot-title__h1">机器人仓库</div>
       <n-button type="primary" size="large">
@@ -168,7 +168,7 @@ const onDelete = () => {
 }
 </script>
 <style scoped lang="scss">
-.robot {
+.robot-container {
   height: 100%;
   max-width: 1280px;
   margin-left: auto;

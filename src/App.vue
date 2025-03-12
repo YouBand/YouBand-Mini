@@ -1,19 +1,25 @@
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
     <div class="app-container">
-      <n-dialog-provider>
-        <RouterView />
-      </n-dialog-provider>
+      <n-modal-provider>
+        <n-dialog-provider>
+          <RouterView />
+        </n-dialog-provider>
+      </n-modal-provider>
     </div>
   </n-config-provider>
 </template>
 
 <script setup>
 import { useThemeStore } from '@/stores/useThemeStore.js'
+import { crateInit } from '@/db/init.js'
 
 const themeStore = useThemeStore()
-onBeforeMount(() => {
-  themeStore.setTheme(themeStore.theme)
+onBeforeMount(async () => {
+  //数据库相关
+  await crateInit()
+
+  await themeStore.setTheme(themeStore.theme)
 })
 
 const themeOverrides = {

@@ -1,5 +1,5 @@
 <template>
-  <div class="model">
+  <div class="model-container">
     <div class="model-title__h1">大模型智库</div>
     <div class="flex gap-[20px] flex-1 overflow-hidden items-start">
       <div class="model-list">
@@ -21,7 +21,7 @@
             <icon-hover-button type="theme" style="width: 28px; height: 28px; font-size: 16px">
               <Icon icon="solar:pen-new-square-line-duotone" />
             </icon-hover-button>
-            <icon-hover-button type="theme-error" style="width: 28px; height: 28px; font-size: 18px" @click="onDelete">
+            <icon-hover-button type="theme-error" style="width: 28px; height: 28px; font-size: 18px" @click="">
               <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
             </icon-hover-button>
           </div>
@@ -208,7 +208,7 @@ const modelManuData = [
 ]
 </script>
 <style scoped lang="scss">
-.model {
+.model-container {
   height: 100%;
   max-width: 1280px;
   margin-left: auto;

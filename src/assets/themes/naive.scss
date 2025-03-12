@@ -47,3 +47,23 @@
     --n-text-color: #fff !important;
   }
 }
+
+//卡片
+.n-card {
+  --n-color-modal: var(--nav-bg) !important;
+  --n-title-text-color: var(--primary-text-color) !important;
+}
+
+//表单
+.n-form {
+  .n-form-item {
+    --n-label-text-color: var(--primary-text-color) !important;
+  }
+}
+
+//按钮
+.n-button {
+  &.n-button--default-type {
+    --n-text-color: var(--minor-text-color) !important;
+  }
+}
