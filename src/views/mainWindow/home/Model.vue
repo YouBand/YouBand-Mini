@@ -6,7 +6,9 @@
         <div class="text-[18px]">已添加的模型</div>
         <div v-for="item in modelData" class="model-list__card flex-col lg:flex-row">
           <div class="flex gap-[10px] items-center">
-            <div class="model-list__card--avatar"></div>
+            <div class="model-list__card--avatar">
+              <img :src="item.avatar" class="h-[90%]" alt="" />
+            </div>
             <div class="flex flex-col justify-between">
               <div class="text-[16px] mb-[2px] line-clamp-1">{{ item.name }}</div>
               <div>
@@ -15,13 +17,16 @@
             </div>
           </div>
           <div class="flex gap-[5px] text-[var(--minor-text-color)] justify-end w-full lg:w-auto">
-            <icon-hover-button type="theme" style="width: 28px; height: 28px; font-size: 18px">
-              <Icon icon="solar:eye-line-duotone" />
-            </icon-hover-button>
-            <icon-hover-button type="theme" style="width: 28px; height: 28px; font-size: 16px">
+            <icon-hover-button
+              @click="() => handlerEditModel(item)"
+              type="theme"
+              style="width: 28px; height: 28px; font-size: 16px">
               <Icon icon="solar:pen-new-square-line-duotone" />
             </icon-hover-button>
-            <icon-hover-button type="theme-error" style="width: 28px; height: 28px; font-size: 18px" @click="">
+            <icon-hover-button
+              @click="() => onDeleteModel(item)"
+              type="theme-error"
+              style="width: 28px; height: 28px; font-size: 18px">
               <Icon icon="solar:trash-bin-minimalistic-line-duotone" />
             </icon-hover-button>
           </div>
@@ -29,9 +34,11 @@
       </div>
       <div class="model-manu-list">
         <div class="text-[18px]">可添加的模型</div>
-        <div v-for="item in modelManuData" class="model-manu-list__card">
+        <div v-for="item in modelManuData" class="model-manu-list__card" @click="() => handlerAddModel(item)">
           <div class="flex items-center gap-[5px] overflow-x-hidden">
-            <div class="model-manu-list__card--avatar"></div>
+            <div class="model-manu-list__card--avatar">
+              <img :src="item.avatar" class="h-[90%]" alt="" />
+            </div>
             <div class="model-manu-list__card--name truncate max-w-[100px] overflow-hidden">
               {{ item.name }}
             </div>
@@ -40,172 +47,165 @@
         </div>
       </div>
     </div>
+    <!--模型添加表单-->
+    <n-modal v-model:show="showAddModelModal" :mask-closable="false" :on-esc="false">
+      <n-card
+        style="width: 500px"
+        :title="isEditModel ? `修改已添加模型` : `添加 ${addModelTypeContent.name} 模型`"
+        :bordered="false"
+        footer-class="flex justify-end gap-[10px]">
+        <n-form ref="addModelForm" :model="modelInfo" :rules="addModelTypeContent.formRules">
+          <n-form-item v-for="item in addModelTypeContent.formField" :path="item.key" :label="item.name">
+            <n-input v-model:value="modelInfo[item.key]" @keydown.enter.prevent placeholder="" />
+          </n-form-item>
+        </n-form>
+        <template #header-extra>
+          <icon-hover-button type="error" @click="showAddModelModal = false">
+            <Icon icon="carbon:close" />
+          </icon-hover-button>
+        </template>
+        <template #footer>
+          <n-button size="small" class="w-[60px]" @click="showAddModelModal = false">取消</n-button>
+          <n-button size="small" class="w-[60px]" type="primary" @click="onAddModel">保存</n-button>
+        </template>
+      </n-card>
+    </n-modal>
   </div>
 </template>
 <script setup>
 import IconHoverButton from '@/components/IconHoverButton.vue'
 import { Icon } from '@iconify/vue'
+import ModelApi from '@/api/model.js'
+import { onMounted } from 'vue'
+import { useDialog } from 'naive-ui'
+import DeepSeekAI from '@/ai/deepseek.js'
 
-const modelData = [
-  {
-    avatar: '',
-    name: '我的Tongyi-Qianwen',
-    type: 'Qianwen'
-  },
-  {
-    avatar: '',
-    name: '我的Tongyi-Qianwen',
-    type: 'Qianwen'
-  },
-  {
-    avatar: '',
-    name: '我的Tongyi-Qianwen',
-    type: 'Qianwen'
-  },
-  {
-    avatar: '',
-    name: '我的Tongyi-Qianwen',
-    type: 'Qianwen'
-  },
-  {
-    avatar: '',
-    name: '我的Tongyi-Qianwen',
-    type: 'Qianwen'
-  },
-  {
-    avatar: '',
-    name: '我的Tongyi-Qianwen',
-    type: 'Qianwen'
-  },
-  {
-    avatar: '',
-    name: '我的Tongyi-Qianwen',
-    type: 'Qianwen'
-  },
-  {
-    avatar: '',
-    name: '我的Tongyi-Qianwen',
-    type: 'Qianwen'
-  },
-  {
-    avatar: '',
-    name: '我的Tongyi-Qianwen',
-    type: 'Qianwen'
-  },
-  {
-    avatar: '',
-    name: '我的Tongyi-Qianwen',
-    type: 'Qianwen'
-  },
-  {
-    avatar: '',
-    name: '我的Tongyi-Qianwen',
-    type: 'Qianwen'
-  },
-  {
-    avatar: '',
-    name: '我的Tongyi-Qianwen',
-    type: 'Qianwen'
-  },
-  {
-    avatar: '',
-    name: '我的Tongyi-Qianwen',
-    type: 'Qianwen'
-  },
-  {
-    avatar: '',
-    name: '我的Tongyi-Qianwen',
-    type: 'Qianwen'
-  }
-]
+const showAddModelModal = ref()
+const modelInfo = ref({})
+const addModelForm = ref()
+const addModelTypeContent = ref({})
+const modelData = ref([])
+const isEditModel = ref(false)
+const dialog = useDialog()
 
 const modelManuData = [
   {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
+    avatar: '/deepseek.svg',
+    name: 'DeepSeek',
+    type: 'deepseek',
+    formField: [
+      { key: 'name', name: '名称' },
+      { key: 'apiKey', name: 'API-Key' },
+      { key: 'model', name: '模型' }
+    ],
+    formRules: {
+      apiKey: [
+        {
+          required: true,
+          message: '请输入API-Key',
+          trigger: ['input', 'blur']
+        }
+      ],
+      name: [
+        {
+          required: true,
+          message: '请输入名称',
+          trigger: ['input', 'blur']
+        }
+      ],
+      model: [
+        {
+          required: true,
+          message: '请输入模型',
+          trigger: ['input', 'blur']
+        }
+      ]
+    }
   },
   {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
+    avatar: '/tongyi.svg',
+    name: '通义千问',
+    type: 'tongyi'
   },
   {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
+    avatar: '/ollama.svg',
+    name: 'Ollama',
+    type: 'ollama'
   },
   {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
-  },
-  {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
-  },
-  {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
-  },
-  {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
-  },
-  {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
-  },
-  {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
-  },
-  {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
-  },
-  {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
-  },
-  {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
-  },
-  {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
-  },
-  {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
-  },
-  {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
-  },
-  {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
-  },
-  {
-    avatar: '',
-    name: 'Qianwen',
-    type: 'qingwen'
+    avatar: '/volcEngine.svg',
+    name: '火山引擎',
+    type: 'volc'
   }
 ]
+
+const handlerAddModel = (item) => {
+  isEditModel.value = false
+  showAddModelModal.value = true
+  modelInfo.value = {}
+  addModelTypeContent.value = item
+}
+
+const handlerEditModel = (item) => {
+  isEditModel.value = true
+  showAddModelModal.value = true
+  modelInfo.value = JSON.parse(item.modelContent)
+  for (let i = 0; i < modelManuData.length; i++) {
+    if (modelManuData[i].type === item.type) {
+      addModelTypeContent.value = modelManuData[i]
+      break
+    }
+  }
+}
+
+const onListModel = () => {
+  ModelApi.list().then((res) => {
+    if (res.code === 0) {
+      modelData.value = res.data
+    }
+  })
+}
+
+const onAddModel = () => {
+  const model = {
+    name: modelInfo.value.name,
+    avatar: addModelTypeContent.value.avatar,
+    type: addModelTypeContent.value.type,
+    modelContent: modelInfo.value
+  }
+  addModelForm.value?.validate((errors) => {
+    if (!errors) {
+      ModelApi.create(model).then((res) => {
+        if (res.code === 0) {
+          onListModel()
+          showAddModelModal.value = false
+        }
+      })
+    }
+  })
+}
+
+const onDeleteModel = (item) => {
+  dialog.error({
+    title: '确认删除',
+    content: `确定要删除 "${item.name}" 吗？此操作无法撤销。`,
+    positiveText: '确定',
+    negativeText: '取消',
+    draggable: false,
+    showIcon: false,
+    onPositiveClick: () => {
+      ModelApi.delete({ id: item.id }).then((res) => {
+        if (res.code === 0) {
+          onListModel()
+        }
+      })
+    }
+  })
+}
+
+onMounted(() => {
+  onListModel()
+})
 </script>
 <style scoped lang="scss">
 .model-container {
@@ -250,8 +250,11 @@ const modelManuData = [
         flex-shrink: 0;
         width: 48px;
         height: 48px;
-        background-color: rgba(var(--primary-color), 0.1);
+        background-color: #fff;
         border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     }
   }
@@ -283,8 +286,11 @@ const modelManuData = [
         flex-shrink: 0;
         width: 40px;
         height: 40px;
-        background-color: rgba(var(--primary-color), 0.1);
+        background-color: #fff;
         border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
 
       .model-manu-list__card--name {

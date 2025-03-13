@@ -48,17 +48,21 @@
     </div>
     <!--添加角色弹窗-->
     <n-modal v-model:show="showAddModal" :mask-closable="false" :on-esc="false">
-      <n-card style="width: 600px" title="添加角色" :bordered="false" footer-class="flex justify-end gap-[10px]">
-        <n-form ref="roleForm" :model="roleModel" :rules="roleFormRules">
+      <n-card
+        style="width: 600px"
+        :title="isEditRole ? '编辑角色' : '添加角色'"
+        :bordered="false"
+        footer-class="flex justify-end gap-[10px]">
+        <n-form ref="roleForm" :model="roleInfo" :rules="roleFormRules">
           <n-form-item path="name" label="角色名称">
-            <n-input v-model:value="roleModel.name" @keydown.enter.prevent placeholder="" />
+            <n-input v-model:value="roleInfo.name" @keydown.enter.prevent placeholder="" />
           </n-form-item>
           <n-form-item path="age" label="年龄">
-            <n-input v-model:value="roleModel.age" @keydown.enter.prevent placeholder="" />
+            <n-input v-model:value="roleInfo.age" @keydown.enter.prevent placeholder="" />
           </n-form-item>
           <n-form-item path="character" label="角色设定">
             <n-input
-              v-model:value="roleModel.character"
+              v-model:value="roleInfo.character"
               placeholder="使用 # 标题 来添加新的属性，例如：&#10;# 任务&#10;这里是任务描述内容&#10;&#10;# 性格&#10;这里是性格描述内容"
               type="textarea"
               :autosize="{
@@ -124,11 +128,12 @@ import IconHoverButton from '@/components/IconHoverButton.vue'
 import { onMounted } from 'vue'
 import RoleApi from '@/api/role.js'
 import { useDialog } from 'naive-ui'
+import DeepSeekAI from '@/ai/deepseek.js'
 
 const roleData = ref([])
 const showAddModal = ref(false)
 const roleForm = ref()
-const roleModel = ref({ name: '', avatar: '', aga: '', character: '' })
+const roleInfo = ref({ name: '', avatar: '', aga: '', character: '' })
 const showDetailsModal = ref(false)
 const detailsRoleModal = ref()
 const dialog = useDialog()
@@ -166,13 +171,13 @@ const roleFormRules = {
 }
 
 const handlerEditRole = (item) => {
-  roleModel.value = item
+  roleInfo.value = { ...item }
   isEditRole.value = true
   showAddModal.value = true
 }
 
 const handlerAddRole = () => {
-  roleModel.value = {}
+  roleInfo.value = {}
   isEditRole.value = false
   showAddModal.value = true
 }
@@ -206,14 +211,14 @@ const onCrateRole = () => {
   roleForm.value?.validate((errors) => {
     if (!errors) {
       if (isEditRole.value) {
-        RoleApi.update(roleModel.value).then((res) => {
+        RoleApi.update(roleInfo.value).then((res) => {
           if (res.code === 0) {
             onListRole()
             showAddModal.value = false
           }
         })
       } else {
-        RoleApi.create(roleModel.value).then((res) => {
+        RoleApi.create(roleInfo.value).then((res) => {
           if (res.code === 0) {
             onListRole()
             showAddModal.value = false
