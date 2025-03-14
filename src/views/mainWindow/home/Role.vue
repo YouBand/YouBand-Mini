@@ -20,7 +20,7 @@
         </div>
         <div class="role-car__content">
           <div class="flex flex-col flex-1 gap-[5px]">
-            <div class="role-car__content--name">{{ item.name }}</div>
+            <div class="role-car__content--name line-clamp-1">{{ item.name }}</div>
             <div class="role-car__content--character">{{ item.character }}</div>
           </div>
           <div class="flex gap-[5px] text-[var(--minor-text-color)] justify-end mt-[10px]">
@@ -55,7 +55,7 @@
         footer-class="flex justify-end gap-[10px]">
         <n-form ref="roleForm" :model="roleInfo" :rules="roleFormRules">
           <n-form-item path="name" label="角色名称">
-            <n-input v-model:value="roleInfo.name" @keydown.enter.prevent placeholder="" />
+            <n-input v-model:value="roleInfo.name" maxlength="16" show-count @keydown.enter.prevent placeholder="" />
           </n-form-item>
           <n-form-item path="age" label="年龄">
             <n-input v-model:value="roleInfo.age" @keydown.enter.prevent placeholder="" />
@@ -128,7 +128,6 @@ import IconHoverButton from '@/components/IconHoverButton.vue'
 import { onMounted } from 'vue'
 import RoleApi from '@/api/role.js'
 import { useDialog } from 'naive-ui'
-import DeepSeekAI from '@/ai/deepseek.js'
 
 const roleData = ref([])
 const showAddModal = ref(false)

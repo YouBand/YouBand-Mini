@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid'
 import ResultUtil from '@/utils/result.js'
 
 class ModelDB {
-  // 创建角色表
+  // 创建表
   static async createModelTable() {
     return db.execute(`
       CREATE TABLE IF NOT EXISTS "model"

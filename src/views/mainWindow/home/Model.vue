@@ -10,7 +10,7 @@
               <img :src="item.avatar" class="h-[90%]" alt="" />
             </div>
             <div class="flex flex-col justify-between">
-              <div class="text-[16px] mb-[2px] line-clamp-1">{{ item.name }}</div>
+              <div class="text-[16px] mb-[2px] w-[100px] md:w-[150px] lg:w-[300px] truncate">{{ item.name }}</div>
               <div>
                 <n-tag size="small" type="primary">{{ item.type }}</n-tag>
               </div>
@@ -66,7 +66,7 @@
         </template>
         <template #footer>
           <n-button size="small" class="w-[60px]" @click="showAddModelModal = false">取消</n-button>
-          <n-button size="small" class="w-[60px]" type="primary" @click="onAddModel">保存</n-button>
+          <n-button size="small" class="w-[60px]" type="primary" @click="onCreateModel">保存</n-button>
         </template>
       </n-card>
     </n-modal>
@@ -78,7 +78,6 @@ import { Icon } from '@iconify/vue'
 import ModelApi from '@/api/model.js'
 import { onMounted } from 'vue'
 import { useDialog } from 'naive-ui'
-import DeepSeekAI from '@/ai/deepseek.js'
 
 const showAddModelModal = ref()
 const modelInfo = ref({})
@@ -150,6 +149,7 @@ const handlerEditModel = (item) => {
   isEditModel.value = true
   showAddModelModal.value = true
   modelInfo.value = JSON.parse(item.modelContent)
+  modelInfo.value.id = item.id
   for (let i = 0; i < modelManuData.length; i++) {
     if (modelManuData[i].type === item.type) {
       addModelTypeContent.value = modelManuData[i]
@@ -166,7 +166,8 @@ const onListModel = () => {
   })
 }
 
-const onAddModel = () => {
+const onCreateModel = () => {
+  modelInfo.value.type = addModelTypeContent.value.type
   const model = {
     name: modelInfo.value.name,
     avatar: addModelTypeContent.value.avatar,
@@ -175,12 +176,22 @@ const onAddModel = () => {
   }
   addModelForm.value?.validate((errors) => {
     if (!errors) {
-      ModelApi.create(model).then((res) => {
-        if (res.code === 0) {
-          onListModel()
-          showAddModelModal.value = false
-        }
-      })
+      if (isEditModel.value) {
+        model.id = modelInfo.value.id
+        ModelApi.update(model).then((res) => {
+          if (res.code === 0) {
+            onListModel()
+            showAddModelModal.value = false
+          }
+        })
+      } else {
+        ModelApi.create(model).then((res) => {
+          if (res.code === 0) {
+            onListModel()
+            showAddModelModal.value = false
+          }
+        })
+      }
     }
   })
 }
