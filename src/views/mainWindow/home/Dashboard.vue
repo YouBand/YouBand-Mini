@@ -46,7 +46,7 @@
         <div class="dash-message__card--wrapper">
           <div class="flex flex-col">
             <div class="dash-message__card--title">上传速率</div>
-            <div class="dash-message__card--num">111.5MB/s</div>
+            <div class="dash-message__card--num">{{ formatBytes(systemInfo['network_tx']) }}/s</div>
           </div>
           <doudone-label size="48px" font-size="24px" color="green">
             <Icon icon="solar:upload-minimalistic-linear" />
@@ -56,7 +56,7 @@
           <n-progress
             type="line"
             :show-indicator="false"
-            :percentage="20"
+            :percentage="systemInfo['network_tx'] / (1024 * 10)"
             color="rgb(34 ,197, 94, 0.8)"
             rail-color="var(--card-bg)" />
         </div>
@@ -65,7 +65,7 @@
         <div class="dash-message__card--wrapper">
           <div class="flex flex-col">
             <div class="dash-message__card--title">下载速率</div>
-            <div class="dash-message__card--num">10MB/s</div>
+            <div class="dash-message__card--num">{{ formatBytes(systemInfo['network_rx']) }}/s</div>
           </div>
           <doudone-label size="48px" font-size="24px" color="red">
             <Icon icon="solar:download-minimalistic-linear" />
@@ -75,7 +75,7 @@
           <n-progress
             type="line"
             :show-indicator="false"
-            :percentage="20"
+            :percentage="systemInfo['network_rx'] / (1024 * 10)"
             color="rgb(239, 68, 68, 0.8)"
             rail-color="var(--card-bg)" />
         </div>
@@ -91,19 +91,19 @@
             </doudone-label>
             <div class="dash-system__title">cpu使用率</div>
           </div>
-          <div class="dash-system__num">45%</div>
+          <div class="dash-system__num">{{ Math.ceil(systemInfo['cpu_usage']) }}%</div>
         </div>
         <div class="dash-system__progress">
           <n-progress
             type="line"
             :show-indicator="false"
-            :percentage="20"
+            :percentage="systemInfo['cpu_usage']"
             color="rgb(var(--primary-color))"
             rail-color="var(--card-bg)" />
         </div>
         <div class="dash-system__bottom-info">
-          <div>核心数：8</div>
-          <div>温度：43度</div>
+          <div></div>
+          <div>核心数：{{ systemInfo['cpu_cores'] }}</div>
         </div>
       </div>
       <div class="dash-system__card">
@@ -114,19 +114,21 @@
             </doudone-label>
             <div class="dash-system__title">内存使用率</div>
           </div>
-          <div class="dash-system__num">62%</div>
+          <div class="dash-system__num">
+            {{ Math.floor((systemInfo['memory_used'] / systemInfo['memory_total']) * 100) }}%
+          </div>
         </div>
         <div class="dash-system__progress">
           <n-progress
             type="line"
             :show-indicator="false"
-            :percentage="20"
+            :percentage="Math.floor((systemInfo['memory_used'] / systemInfo['memory_total']) * 100)"
             color="rgb(var(--primary-color))"
             rail-color="var(--card-bg)" />
         </div>
         <div class="dash-system__bottom-info">
-          <div>已用：8GB</div>
-          <div>总量：32GB</div>
+          <div>已用：{{ formatBytes(systemInfo['memory_used']) }}</div>
+          <div>总量： {{ formatBytes(systemInfo['memory_total']) }}</div>
         </div>
       </div>
       <div class="dash-system__card">
@@ -137,19 +139,21 @@
             </doudone-label>
             <div class="dash-system__title">磁盘使用率</div>
           </div>
-          <div class="dash-system__num">30%</div>
+          <div class="dash-system__num">
+            {{ Math.floor((systemInfo['disk_used'] / systemInfo['disk_total']) * 100) }}%
+          </div>
         </div>
         <div class="dash-system__progress">
           <n-progress
             type="line"
             :show-indicator="false"
-            :percentage="20"
+            :percentage="Math.floor((systemInfo['disk_used'] / systemInfo['disk_total']) * 100)"
             color="rgb(var(--primary-color))"
             rail-color="var(--card-bg)" />
         </div>
         <div class="dash-system__bottom-info">
-          <div>已用：81GB</div>
-          <div>总量：200GB</div>
+          <div>已用：{{ formatBytes(systemInfo['disk_used']) }}</div>
+          <div>总量：{{ formatBytes(systemInfo['disk_total']) }}</div>
         </div>
       </div>
     </div>
@@ -203,15 +207,21 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 import DoudoneLabel from '@/components/DoudoneLabel.vue'
+import * as echarts from 'echarts/core'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { LineChart } from 'echarts/charts'
-import { GridComponent, TooltipComponent, TitleComponent, DataZoomComponent } from 'echarts/components'
+import { DataZoomComponent, GridComponent, TitleComponent, TooltipComponent } from 'echarts/components'
 import VChart from 'vue-echarts'
-import * as echarts from 'echarts/core'
+import { invoke } from '@tauri-apps/api/core'
+import { onMounted, onUnmounted } from 'vue'
+
+let timer = null
 
 use([CanvasRenderer, LineChart, GridComponent, TooltipComponent, TitleComponent, DataZoomComponent])
+const systemInfo = ref({})
 
+//图表
 const chartOption = computed(() => {
   const xdata = ['01', '02', '03', '04', '05', '06', '07']
   const ydata = [324, 233, 653, 123, 334, 532, 213]
@@ -277,6 +287,32 @@ const chartOption = computed(() => {
       }
     ]
   }
+})
+
+const formatBytes = (bytes) => {
+  if (bytes === 0) return '0 B'
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+const handlerGetSystemInfo = async () => {
+  systemInfo.value = await invoke('get_system_info')
+}
+
+onBeforeMount(() => {
+  handlerGetSystemInfo()
+})
+
+onMounted(() => {
+  timer = setInterval(() => {
+    handlerGetSystemInfo()
+  }, 1500)
+})
+
+onUnmounted(() => {
+  clearInterval(timer)
 })
 </script>
 <style scoped lang="scss">

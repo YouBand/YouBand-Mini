@@ -1,6 +1,8 @@
 use tauri::{Manager, WindowEvent};
 mod user_cmd;
 use user_cmd::{get_user_info, save_user_info};
+mod sys_cmd;
+use sys_cmd::{get_system_info};
 mod tray;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -31,7 +33,7 @@ pub fn run() {
             }
             _ => (),
         })
-        .invoke_handler(tauri::generate_handler![get_user_info, save_user_info])
+        .invoke_handler(tauri::generate_handler![get_user_info, save_user_info, get_system_info])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
