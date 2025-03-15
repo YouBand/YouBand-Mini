@@ -33,7 +33,7 @@ class NapCatRobot {
         }
       },
       () => {
-        NapCatRobot.connects.delete(param.id)
+        NapCatRobot.closeContent(param)
         robotStore.setRobotStatus(param.id, RobotStatus.Error)
       }
     ).then((ws) => {
@@ -45,8 +45,10 @@ class NapCatRobot {
 
   static async closeContent(param) {
     const connectInfo = NapCatRobot.connects.get(param.id)
-    if (connectInfo) connectInfo.ws.disconnect()
-    console.log(`${param.name},NapCat连接已关闭`)
+    if (connectInfo) {
+      connectInfo.ws.disconnect()
+      console.log(`${param.name},NapCat连接已关闭`)
+    }
     NapCatRobot.connects.delete(param.id)
     robotStore.setRobotStatus(param.id, RobotStatus.NoRun)
   }

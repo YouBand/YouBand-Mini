@@ -22,7 +22,7 @@ const props = defineProps({
   color: {
     type: String,
     default: 'primary',
-    validator: (value) => ['primary', 'blue', 'green', 'red', 'yellow'].includes(value) // 颜色验证
+    validator: (value) => ['primary', 'blue', 'purple', 'green', 'red', 'yellow'].includes(value) // 颜色验证
   }
 })
 

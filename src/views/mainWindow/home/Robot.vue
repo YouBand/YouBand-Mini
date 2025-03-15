@@ -102,7 +102,7 @@
       </div>
     </div>
     <!--添加机器人-->
-    <n-modal v-model:show="showAddRobot" :mask-closable="false" :on-esc="false">
+    <n-modal v-model:show="showAddRobot" :mask-closable="false" :close-on-esc="false">
       <n-card style="width: 500px" title="添加机器人" :bordered="false" footer-class="flex justify-end gap-[10px]">
         <n-form ref="robotForm" :model="robotInfo" :rules="robotFormRules">
           <n-form-item path="type" label="类型">

@@ -1,8 +1,10 @@
 import DeepSeekAI from '@/ai/deepseek.js'
+import OllamakAI from '@/ai/ollama.js'
 
 class AI {
   static ais = {
-    deepseek: DeepSeekAI
+    deepseek: DeepSeekAI,
+    ollama: OllamakAI
   }
 
   static async getResponseContent(roleCharacter, modelContent, context, message) {

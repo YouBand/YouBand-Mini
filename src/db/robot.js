@@ -81,7 +81,6 @@ class RobotDB {
 
   //更新
   static async update(param) {
-    console.log(param)
     const result = await db.execute(
       'UPDATE robot set name=$1, avatar=$2, type=$3, updateTime=$4, role=$5, model=$6, robotContent=$7 where id = $8',
       [param.name, param.avatar, param.type, new Date(), param.role, param.model, param.robotContent, param.id]

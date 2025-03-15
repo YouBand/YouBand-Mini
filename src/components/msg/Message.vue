@@ -6,7 +6,7 @@
 <script setup>
 const props = defineProps({
   right: Boolean,
-  message: Object
+  message: String
 })
 </script>
 <style scoped lang="scss">

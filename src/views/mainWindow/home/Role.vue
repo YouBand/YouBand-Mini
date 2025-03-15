@@ -47,7 +47,7 @@
       </div>
     </div>
     <!--添加角色弹窗-->
-    <n-modal v-model:show="showAddModal" :mask-closable="false" :on-esc="false">
+    <n-modal v-model:show="showAddModal" :mask-closable="false" :close-on-esc="false">
       <n-card
         style="width: 600px"
         :title="isEditRole ? '编辑角色' : '添加角色'"

@@ -13,7 +13,15 @@ const HttpUtil = {
       }
     })
     if (!response.ok) {
-      throw new Error(`Request failed with status code ${response.status}`)
+      const errorBody = await response.text()
+      let errorMessage = `Request failed with status ${response.status} ${response.statusText}`
+      try {
+        const jsonError = JSON.parse(errorBody)
+        errorMessage += `,Response Body: ${JSON.stringify(jsonError)}`
+      } catch {
+        errorMessage += `,Response Body: ${errorBody}`
+      }
+      throw new Error(errorMessage)
     }
     return await response.json()
   }

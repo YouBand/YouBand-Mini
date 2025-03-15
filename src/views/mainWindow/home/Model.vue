@@ -48,7 +48,7 @@
       </div>
     </div>
     <!--模型添加表单-->
-    <n-modal v-model:show="showAddModelModal" :mask-closable="false" :on-esc="false">
+    <n-modal v-model:show="showAddModelModal" :mask-closable="false" :close-on-esc="false">
       <n-card
         style="width: 500px"
         :title="isEditModel ? `修改已添加模型` : `添加 ${addModelTypeContent.name} 模型`"
@@ -56,7 +56,17 @@
         footer-class="flex justify-between gap-[10px] items-center">
         <n-form ref="addModelForm" :model="modelInfo" :rules="addModelTypeContent.formRules">
           <n-form-item v-for="item in addModelTypeContent.formField" :path="item.key" :label="item.name">
-            <n-input v-model:value="modelInfo[item.key]" @keydown.enter.prevent :placeholder="item.placeholder" />
+            <n-input
+              v-if="item.type === 'input'"
+              v-model:value="modelInfo[item.key]"
+              @keydown.enter.prevent
+              :placeholder="item.placeholder" />
+            <n-slider
+              v-if="item.type === 'slider'"
+              v-model:value="modelInfo[item.key]"
+              :step="item.step"
+              :max="item.max"
+              :min="item.min" />
           </n-form-item>
         </n-form>
         <template #header-extra>
@@ -65,7 +75,7 @@
           </icon-hover-button>
         </template>
         <template #footer>
-          <n-a :href="addModelTypeContent.operate.url" target="_blank">{{ addModelTypeContent.operate.name }} </n-a>
+          <n-a :href="addModelTypeContent.operate.url" target="_blank">{{ addModelTypeContent.operate.name }}</n-a>
           <div class="flex gap-[10px]">
             <n-button size="small" class="w-[60px]" @click="showAddModelModal = false">取消</n-button>
             <n-button size="small" class="w-[60px]" type="primary" @click="onCreateModel">保存</n-button>
@@ -82,7 +92,7 @@ import ModelApi from '@/api/model.js'
 import { onMounted } from 'vue'
 import { useDialog } from 'naive-ui'
 
-const showAddModelModal = ref()
+const showAddModelModal = ref(false)
 const modelInfo = ref({})
 const addModelForm = ref()
 const addModelTypeContent = ref({})
@@ -96,9 +106,11 @@ const modelManuData = [
     name: 'DeepSeek',
     type: 'deepseek',
     formField: [
-      { key: 'name', name: '名称', placeholder: '请输入名称' },
-      { key: 'apiKey', name: 'API-Key', placeholder: '请从DeepSeek获取，并输入API密钥' },
-      { key: 'model', name: '模型', placeholder: '请输入模型，例如：deepseek-chat' }
+      { key: 'name', name: '名称', type: 'input', placeholder: '请输入名称' },
+      { key: 'apiKey', name: 'API-Key', type: 'input', placeholder: '请从DeepSeek获取，并输入API密钥' },
+      { key: 'model', name: '模型', type: 'input', placeholder: '请输入模型，例如：deepseek-chat' },
+      { key: 'temperature', name: '温度', type: 'slider', max: 1.7, min: 0, step: 0.1, defaultValue: 1.3 },
+      { key: 'maxToken', name: '最大Token数', type: 'slider', max: 5000, min: 20, step: 1, defaultValue: 2000 }
     ],
     formRules: {
       apiKey: [
@@ -129,14 +141,55 @@ const modelManuData = [
     }
   },
   {
+    avatar: '/ollama.svg',
+    name: 'Ollama',
+    type: 'ollama',
+    formField: [
+      { key: 'name', name: '名称', type: 'input', placeholder: '请输入名称' },
+      {
+        key: 'url',
+        name: '基础的url',
+        type: 'input',
+        placeholder: '例如：http://localhost:11434',
+        defaultValue: 'http://localhost:11434'
+      },
+      { key: 'apiKey', name: 'API-Key', type: 'input', placeholder: '本地部署可以忽略' },
+      { key: 'model', name: '模型', type: 'input', placeholder: '请输入模型，例如：qwen2.5:7b' },
+      { key: 'temperature', name: '温度', type: 'slider', max: 1.7, min: 0, step: 0.1, defaultValue: 1.3 },
+      { key: 'maxToken', name: '最大Token数', type: 'slider', max: 5000, min: 20, step: 1, defaultValue: 2000 }
+    ],
+    formRules: {
+      name: [
+        {
+          required: true,
+          message: '请输入名称',
+          trigger: ['input', 'blur']
+        }
+      ],
+      url: [
+        {
+          required: true,
+          message: '请输入url',
+          trigger: ['input', 'blur']
+        }
+      ],
+      model: [
+        {
+          required: true,
+          message: '请输入模型',
+          trigger: ['input', 'blur']
+        }
+      ]
+    },
+    operate: {
+      name: '如何使用ollama',
+      url: 'https://ollama.com/'
+    }
+  },
+  {
     avatar: '/tongyi.svg',
     name: '通义千问',
     type: 'tongyi'
-  },
-  {
-    avatar: '/ollama.svg',
-    name: 'Ollama',
-    type: 'ollama'
   },
   {
     avatar: '/volcEngine.svg',
@@ -150,6 +203,12 @@ const handlerAddModel = (item) => {
   showAddModelModal.value = true
   modelInfo.value = {}
   addModelTypeContent.value = item
+  for (let i = 0; i < item.formField.length; i++) {
+    //赋初始值
+    if (item.formField[i].defaultValue) {
+      modelInfo.value[item.formField[i].key] = item.formField[i].defaultValue
+    }
+  }
 }
 
 const handlerEditModel = (item) => {
