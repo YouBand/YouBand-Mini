@@ -53,10 +53,10 @@
         style="width: 500px"
         :title="isEditModel ? `修改已添加模型` : `添加 ${addModelTypeContent.name} 模型`"
         :bordered="false"
-        footer-class="flex justify-end gap-[10px]">
+        footer-class="flex justify-between gap-[10px] items-center">
         <n-form ref="addModelForm" :model="modelInfo" :rules="addModelTypeContent.formRules">
           <n-form-item v-for="item in addModelTypeContent.formField" :path="item.key" :label="item.name">
-            <n-input v-model:value="modelInfo[item.key]" @keydown.enter.prevent placeholder="" />
+            <n-input v-model:value="modelInfo[item.key]" @keydown.enter.prevent :placeholder="item.placeholder" />
           </n-form-item>
         </n-form>
         <template #header-extra>
@@ -65,8 +65,11 @@
           </icon-hover-button>
         </template>
         <template #footer>
-          <n-button size="small" class="w-[60px]" @click="showAddModelModal = false">取消</n-button>
-          <n-button size="small" class="w-[60px]" type="primary" @click="onCreateModel">保存</n-button>
+          <n-a :href="addModelTypeContent.operate.url" target="_blank">{{ addModelTypeContent.operate.name }} </n-a>
+          <div class="flex gap-[10px]">
+            <n-button size="small" class="w-[60px]" @click="showAddModelModal = false">取消</n-button>
+            <n-button size="small" class="w-[60px]" type="primary" @click="onCreateModel">保存</n-button>
+          </div>
         </template>
       </n-card>
     </n-modal>
@@ -93,9 +96,9 @@ const modelManuData = [
     name: 'DeepSeek',
     type: 'deepseek',
     formField: [
-      { key: 'name', name: '名称' },
-      { key: 'apiKey', name: 'API-Key' },
-      { key: 'model', name: '模型' }
+      { key: 'name', name: '名称', placeholder: '请输入名称' },
+      { key: 'apiKey', name: 'API-Key', placeholder: '请从DeepSeek获取，并输入API密钥' },
+      { key: 'model', name: '模型', placeholder: '请输入模型，例如：deepseek-chat' }
     ],
     formRules: {
       apiKey: [
@@ -119,6 +122,10 @@ const modelManuData = [
           trigger: ['input', 'blur']
         }
       ]
+    },
+    operate: {
+      name: '如何使用DeepSeek',
+      url: 'https://api-docs.deepseek.com/zh-cn/'
     }
   },
   {

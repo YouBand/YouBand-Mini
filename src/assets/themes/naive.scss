@@ -10,11 +10,13 @@
 }
 
 //下拉选择
-.n-select .n-base-selection {
-  --n-placeholder-color: var(--minor-text-color) !important;
-  --n-color: var(--card-bg) !important;
-  --n-color-active: var(--divider) !important;
-  --n-text-color: var(--primary-text-color) !important;
+.n-select {
+  .n-base-selection {
+    --n-placeholder-color: var(--minor-text-color) !important;
+    --n-color: var(--card-bg) !important;
+    --n-color-active: var(--divider) !important;
+    --n-text-color: var(--primary-text-color) !important;
+  }
 }
 
 //下拉菜单
@@ -24,6 +26,7 @@
   --n-option-text-color: var(--minor-text-color) !important;
   --n-option-color-pending: var(--card-bg) !important;
   --n-option-color-active-pending: var(--card-bg) !important;
+  --n-action-text-color: var(--minor-text-color) !important;
 }
 
 //标签

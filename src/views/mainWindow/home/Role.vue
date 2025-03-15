@@ -55,10 +55,19 @@
         footer-class="flex justify-end gap-[10px]">
         <n-form ref="roleForm" :model="roleInfo" :rules="roleFormRules">
           <n-form-item path="name" label="角色名称">
-            <n-input v-model:value="roleInfo.name" maxlength="16" show-count @keydown.enter.prevent placeholder="" />
+            <n-input
+              v-model:value="roleInfo.name"
+              maxlength="16"
+              show-count
+              @keydown.enter.prevent
+              placeholder="请输入角色名称" />
           </n-form-item>
           <n-form-item path="age" label="年龄">
-            <n-input v-model:value="roleInfo.age" @keydown.enter.prevent placeholder="" />
+            <n-input
+              :allow-input="(value: string) => !value || /^\d+$/.test(value)"
+              v-model:value="roleInfo.age"
+              @keydown.enter.prevent
+              placeholder="请输入角色年龄" />
           </n-form-item>
           <n-form-item path="character" label="角色设定">
             <n-input

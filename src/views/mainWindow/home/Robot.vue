@@ -39,7 +39,7 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-[5px] w-[80%]">
             <div class="robot-list__card--avatar">
-              <img :src="item.avatar" class="h-[90%]" alt="" />
+              <img :src="item.avatar" class="h-[90%] w-[90%]" alt="" />
             </div>
             <div class="text-[18px] line-clamp-1">{{ item.name }}</div>
           </div>
@@ -122,7 +122,12 @@
               :options="roleData"
               placeholder="请选择角色"
               value-field="id"
-              label-field="name" />
+              label-field="name">
+              <template #action>
+                点击跳转
+                <n-a @click="() => router.push('/home/role')">创建角色</n-a>
+              </template>
+            </n-select>
           </n-form-item>
           <n-form-item path="model" label="模型">
             <n-select
@@ -130,7 +135,12 @@
               :options="modelData"
               placeholder="请选择模型"
               value-field="id"
-              label-field="name" />
+              label-field="name">
+              <template #action>
+                点击跳转
+                <n-a @click="() => router.push('/home/model')">创建模型</n-a>
+              </template>
+            </n-select>
           </n-form-item>
           <n-form-item
             v-for="item in selectTypeOption.formField"
@@ -168,7 +178,9 @@ import Robot from '@/robot/robot.js'
 import { useRobotStore } from '@/stores/useRobotStore.js'
 import RobotStatus from '@/constant/robotStatus.js'
 import robotStatus from '@/constant/robotStatus.js'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const typeValue = ref()
 const statusValue = ref()
 const searchInputValue = ref('')
