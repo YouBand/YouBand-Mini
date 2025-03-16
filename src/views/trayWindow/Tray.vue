@@ -8,7 +8,7 @@ import { exit } from '@tauri-apps/plugin-process'
 import { onMounted } from 'vue'
 import { invoke } from '@tauri-apps/api/core'
 
-const userInfo = ref()
+const userInfo = ref({})
 
 onMounted(() => {
   //获取用户信息

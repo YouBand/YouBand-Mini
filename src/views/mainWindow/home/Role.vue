@@ -140,10 +140,10 @@ import { useDialog } from 'naive-ui'
 
 const roleData = ref([])
 const showAddModal = ref(false)
-const roleForm = ref()
+const roleForm = ref({})
 const roleInfo = ref({ name: '', avatar: '', aga: '', character: '' })
 const showDetailsModal = ref(false)
-const detailsRoleModal = ref()
+const detailsRoleModal = ref({})
 const dialog = useDialog()
 const isEditRole = ref(false)
 

@@ -63,7 +63,18 @@
           <div class="text-[var(--minor-text-color)] shrink-0 mr-[10px]">消息数</div>
           <div class="line-clamp-1">{{ item.messageNum }}</div>
         </div>
-        <div class="flex gap-[5px] text-[var(--minor-text-color)] justify-end mt-[10px]">
+        <div class="flex text-[var(--minor-text-color)] justify-end mt-[10px]">
+          <n-popover trigger="hover">
+            <template #trigger>
+              <icon-hover-button
+                @click="() => handlerStopRobot(item)"
+                type="theme"
+                style="width: 36px; height: 36px; font-size: 20px">
+                <Icon icon="solar:laptop-minimalistic-bold" />
+              </icon-hover-button>
+            </template>
+            <span>记录</span>
+          </n-popover>
           <n-popover v-if="robotStore.robotStatus[item.id] !== RobotStatus.Running" trigger="hover">
             <template #trigger>
               <icon-hover-button
@@ -187,7 +198,7 @@ const searchInputValue = ref('')
 const dialog = useDialog()
 const showAddRobot = ref(false)
 const robotInfo = ref({ robotContent: {} })
-const robotForm = ref()
+const robotForm = ref({})
 const selectTypeOption = ref({})
 const roleData = ref([])
 const modelData = ref([])
