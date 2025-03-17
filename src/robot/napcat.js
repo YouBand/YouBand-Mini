@@ -2,8 +2,8 @@ import WsUtil from '@/utils/ws.js'
 import AI from '@/ai/ai.js'
 import { useRobotStore } from '@/stores/useRobotStore.js'
 import RobotStatus from '@/constant/robotStatus.js'
-import RecordDB from '@/db/record.js'
 import RecordType from '@/constant/recordType.js'
+import RecordApi from '@/api/record.js'
 
 const robotStore = useRobotStore()
 
@@ -60,7 +60,7 @@ class NapCatRobot {
   }
 
   static crateRecord(produceId, type, recordContent, targetInfo) {
-    RecordDB.create({ produceId, type, recordContent, targetInfo }).then()
+    RecordApi.create({ produceId, type, recordContent, targetInfo }).then()
   }
 
   static async reply(key, data) {

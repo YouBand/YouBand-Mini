@@ -31,6 +31,17 @@
             </icon-hover-button>
           </div>
         </div>
+        <!--空列表-->
+        <empty
+          v-if="modelData.length <= 0"
+          title="暂无已添加模型"
+          content="您可以点击右侧列表选项，添加您需要的模型。"
+          operate-text="添加DeepSeek模型"
+          @onOk="() => handlerAddModel(modelManuData[0])">
+          <template #icon>
+            <Icon icon="solar:black-hole-line-duotone" />
+          </template>
+        </empty>
       </div>
       <div class="model-manu-list">
         <div class="text-[18px]">可添加的模型</div>
@@ -91,6 +102,7 @@ import { Icon } from '@iconify/vue'
 import ModelApi from '@/api/model.js'
 import { onMounted } from 'vue'
 import { useDialog } from 'naive-ui'
+import Empty from '@/components/Empty.vue'
 
 const showAddModelModal = ref(false)
 const modelInfo = ref({})

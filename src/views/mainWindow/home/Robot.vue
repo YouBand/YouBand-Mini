@@ -34,7 +34,7 @@
         v-model:value="statusValue"
         :options="statusOption" />
     </div>
-    <div class="robot-list">
+    <div v-if="robotFilterData.length > 0" class="robot-list">
       <div v-for="item in robotFilterData" class="robot-list-card">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-[5px] w-[80%]">
@@ -58,10 +58,6 @@
         <div class="flex justify-between">
           <div class="text-[var(--minor-text-color)] shrink-0 mr-[10px]]">模型</div>
           <div class="line-clamp-1">{{ item.modelName }}</div>
-        </div>
-        <div class="flex justify-between">
-          <div class="text-[var(--minor-text-color)] shrink-0 mr-[10px]">消息数</div>
-          <div class="line-clamp-1">{{ item.messageNum }}</div>
         </div>
         <div class="flex text-[var(--minor-text-color)] justify-end mt-[10px]">
           <n-popover v-if="robotStore.robotStatus[item.id] !== RobotStatus.Running" trigger="hover">
@@ -112,6 +108,17 @@
         </div>
       </div>
     </div>
+    <!--空列表-->
+    <empty
+      v-if="robotFilterData.length <= 0"
+      title="暂无机器人数据"
+      content="您当前尚未添加任何机器人。创建前请先创建所需模型和角色，再进行机器人添加操作。"
+      operate-text="添加第一个机器人"
+      @onOk="handlerAddRobot">
+      <template #icon>
+        <Icon icon="solar:ghost-broken" />
+      </template>
+    </empty>
     <!--添加机器人-->
     <n-modal v-model:show="showAddRobot" :mask-closable="false" :close-on-esc="false">
       <n-card style="width: 500px" title="添加机器人" :bordered="false" footer-class="flex justify-end gap-[10px]">
@@ -194,11 +201,21 @@
                 </div>
               </div>
             </div>
-            <icon-hover-button type="error" @click="showRecordRobot = false">
-              <Icon icon="carbon:close" />
-            </icon-hover-button>
+            <div class="flex gap-[15px]">
+              <n-popover trigger="hover" placement="bottom">
+                <template #trigger>
+                  <icon-hover-button type="theme" @click="onCleanRecord" style="font-size: 20px">
+                    <Icon icon="solar:eraser-bold-duotone" />
+                  </icon-hover-button>
+                </template>
+                <span>清空记录</span>
+              </n-popover>
+              <icon-hover-button type="error" @click="showRecordRobot = false">
+                <Icon icon="carbon:close" />
+              </icon-hover-button>
+            </div>
           </div>
-          <div class="robot-record-list">
+          <div v-if="robotRecordData.length > 0" class="robot-record-list">
             <div v-for="item in robotRecordData" :class="['robot-record__card', `${item.type}`]">
               <div class="flex justify-between">
                 <div class="flex gap-[10px] items-center">
@@ -216,6 +233,11 @@
               <div class="overflow-hidden">{{ item.recordContent }}</div>
             </div>
           </div>
+          <empty v-if="robotRecordData.length <= 0" title="暂无数据记录" content="您可以尝试启动当前机器人。">
+            <template #icon>
+              <Icon icon="solar:ghost-broken" />
+            </template>
+          </empty>
         </div>
       </div>
     </n-modal>
@@ -234,9 +256,10 @@ import { useRobotStore } from '@/stores/useRobotStore.js'
 import RobotStatus from '@/constant/robotStatus.js'
 import robotStatus from '@/constant/robotStatus.js'
 import { useRouter } from 'vue-router'
-import RecordDB from '@/db/record.js'
 import RecordType from '@/constant/recordType.js'
 import DateUtil from '../../../utils/date.js'
+import Empty from '@/components/Empty.vue'
+import RecordApi from '@/api/record.js'
 
 const router = useRouter()
 const typeValue = ref()
@@ -346,6 +369,24 @@ const robotFilterData = computed(() => {
   })
 })
 
+const onCleanRecord = () => {
+  dialog.error({
+    title: '确认清空',
+    content: `确定要清空 "${selectedRobotInfo.value.name}" 机器人的记录吗？此操作无法撤销。`,
+    positiveText: '确定',
+    negativeText: '取消',
+    draggable: false,
+    showIcon: false,
+    onPositiveClick: () => {
+      RecordApi.clean({ produceId: selectedRobotInfo.value.id }).then((res) => {
+        if (res.code === 0) {
+          onPageRobot(selectedRobotInfo.value)
+        }
+      })
+    }
+  })
+}
+
 watch(
   () => robotInfo.value.type,
   () => {
@@ -363,9 +404,12 @@ watch(
 const handlerRecordRobot = (item) => {
   showRecordRobot.value = true
   selectedRobotInfo.value = item
-  RecordDB.page({ produceId: item.id, index: 0, num: 99 }).then((res) => {
+  onPageRobot(item)
+}
+
+const onPageRobot = (item) => {
+  RecordApi.page({ produceId: item.id, index: 0, num: 99 }).then((res) => {
     if (res.code === 0) {
-      console.log(res)
       robotRecordData.value = res.data
     }
   })

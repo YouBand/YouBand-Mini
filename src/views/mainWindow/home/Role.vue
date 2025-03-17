@@ -10,7 +10,7 @@
       </n-button>
     </div>
     <!--角色列表-->
-    <div class="role-list">
+    <div v-if="roleData.length > 0" class="role-list">
       <div v-for="item in roleData" class="role-card">
         <div class="role-card__avatar">
           <div
@@ -46,6 +46,17 @@
         </div>
       </div>
     </div>
+    <!--空列表-->
+    <empty
+      v-if="roleData.length <= 0"
+      title="暂无角色数据"
+      content="您还没有添加任何角色。角色可以帮助您定义机器人助手的个性、您可以设置性格和行为方式等。"
+      operate-text="添加第一个角色"
+      @onOk="handlerAddRole">
+      <template #icon>
+        <Icon icon="solar:user-broken" />
+      </template>
+    </empty>
     <!--添加角色弹窗-->
     <n-modal v-model:show="showAddModal" :mask-closable="false" :close-on-esc="false">
       <n-card
@@ -137,6 +148,7 @@ import IconHoverButton from '@/components/IconHoverButton.vue'
 import { onMounted } from 'vue'
 import RoleApi from '@/api/role.js'
 import { useDialog } from 'naive-ui'
+import Empty from '@/components/Empty.vue'
 
 const roleData = ref([])
 const showAddModal = ref(false)

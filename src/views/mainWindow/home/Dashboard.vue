@@ -10,16 +10,16 @@
         <div class="dash-message__card--wrapper">
           <div class="flex flex-col">
             <div class="dash-message__card--title">今日消息数</div>
-            <div class="dash-message__card--num">2156</div>
+            <div class="dash-message__card--num">{{ messageStatsInfo?.today?.count }}</div>
           </div>
           <doudone-label size="48px" font-size="24px" color="primary">
             <Icon icon="solar:chat-round-dots-line-duotone" />
           </doudone-label>
         </div>
         <div class="dash-message__bottom--wrapper">
-          <div class="dash-message__card--index">
+          <div :class="['dash-message__card--index', { error: messageStatsInfo?.today?.growth < 0 }]">
             <Icon icon="solar:course-up-linear" />
-            +12%
+            {{ messageStatsInfo?.today?.growth }}%
           </div>
           <div>较昨日</div>
         </div>
@@ -28,16 +28,16 @@
         <div class="dash-message__card--wrapper">
           <div class="flex flex-col">
             <div class="dash-message__card--title">消息总数</div>
-            <div class="dash-message__card--num">82345</div>
+            <div class="dash-message__card--num">{{ messageStatsInfo?.total?.count }}</div>
           </div>
           <doudone-label size="48px" font-size="24px" color="purple">
             <Icon icon="solar:pie-chart-3-linear" />
           </doudone-label>
         </div>
         <div class="dash-message__bottom--wrapper">
-          <div class="dash-message__card--index">
+          <div :class="['dash-message__card--index', { error: messageStatsInfo?.total?.growth < 0 }]">
             <Icon icon="solar:course-up-linear" />
-            +12%
+            {{ messageStatsInfo?.total?.growth }}%
           </div>
           <div>较昨日</div>
         </div>
@@ -160,45 +160,70 @@
     <!-- 在线机器人和消息趋势 -->
     <div class="dash-info">
       <div class="dash-info__robot-list">
-        <div class="text-[18px] select-none">在线机器人</div>
-        <div class="dash-info__list-card active">
+        <div class="text-[18px] select-none">机器人</div>
+        <div
+          v-for="item in robotData"
+          :class="['dash-info__list-card', { active: item.id === selectedRobotInfo.id }]"
+          @click="() => (selectedRobotInfo = item)">
           <div class="flex items-center">
-            <doudone-label size="32px" font-size="14px" color="primary">QQ</doudone-label>
-            <div class="text-[16px] text-[var(--minor-text-color)] ml-[10px]">我的QQ机器人</div>
+            <div class="dash-info__card-avatar">
+              <img :src="item.avatar" class="h-[90%] w-[90%]" alt="" />
+            </div>
+            <div class="text-[16px] text-[var(--minor-text-color)] ml-[10px]">{{ item.name }}</div>
           </div>
-          <n-tag size="small" :color="{ color: '#22C55E19', textColor: '#22C55E' }"> 在线</n-tag>
+          <n-tag size="small" :type="robotStore.robotStatus[item.id] === RobotStatus.Running ? 'primary' : 'error'">
+            {{ getRobotStatus(item.id) }}
+          </n-tag>
         </div>
-        <div class="dash-info__list-card">
-          <div class="flex items-center">
-            <doudone-label size="32px" font-size="14px" color="primary">WX</doudone-label>
-            <div class="text-[16px] text-[var(--minor-text-color)] ml-[10px]">我的微信机器人</div>
-          </div>
-          <n-tag size="small" :color="{ color: '#22C55E19', textColor: '#22C55E' }"> 在线</n-tag>
+        <div v-if="robotData.length <= 0" class="mt-[50px] flex justify-center items-center">
+          <div class="mr-[2px] text-[var(--minor-text-color)]">暂无机器人，跳转</div>
+          <n-a @click="() => router.push('/home/robot')">创建机器人</n-a>
         </div>
       </div>
       <div class="dash-info__robot-details">
-        <div class="dash-info__details-info">
+        <div v-if="selectedRobotInfo.id" class="dash-info__details-info">
           <div class="flex justify-center items-center">
-            <doudone-label size="40px" font-size="16px" color="primary">WX</doudone-label>
+            <div class="dash-info__details--avatar">
+              <img :src="selectedRobotInfo.avatar" class="h-[90%] w-[90%]" alt="" />
+            </div>
             <div class="flex flex-col justify-center ml-[10px]">
-              <div class="text-[18px]">我的微信机器人</div>
+              <div class="text-[18px]">{{ selectedRobotInfo.name }}</div>
               <div class="flex justify-center items-center mt-[4px] gap-[20px] text-[14px]">
-                <div><span class="text-[var(--minor-text-color)] mr-[4px]">角色:</span>莉莉娅</div>
-                <div><span class="text-[var(--minor-text-color)] mr-[4px]">模型:</span>DeepSeek</div>
-                <n-tag size="small" :color="{ color: '#22C55E19', textColor: '#22C55E' }"> 在线</n-tag>
+                <div>
+                  <span class="text-[var(--minor-text-color)] mr-[4px]">角色:</span>{{ selectedRobotInfo.roleName }}
+                </div>
+                <div>
+                  <span class="text-[var(--minor-text-color)] mr-[4px]">模型:</span> {{ selectedRobotInfo.modelName }}
+                </div>
+                <n-tag
+                  size="small"
+                  :type="robotStore.robotStatus[selectedRobotInfo.id] === RobotStatus.Running ? 'primary' : 'error'">
+                  {{ getRobotStatus(selectedRobotInfo.id) }}
+                </n-tag>
               </div>
             </div>
           </div>
         </div>
-        <div class="dash-info__details-chart">
+        <div v-if="selectedRobotInfo.id" class="dash-info__details-chart">
           <div class="flex items-center mb-[20px]">
             <div class="bg-[rgb(var(--primary-color))] w-[14px] h-[14px] rounded-full mr-[5px]"></div>
             <div class="text-[var(--minor-text-color)] mr-[20px]">7日消息数量</div>
-            <div><span class="text-[var(--minor-text-color)] mr-[4px]">总计:</span>222</div>
+            <div><span class="text-[var(--minor-text-color)] mr-[4px]">总计:</span>{{ dayStatsInfo.total }}</div>
           </div>
           <div class="h-[220px]">
             <v-chart :option="chartOption" autoresize />
           </div>
+        </div>
+        <div v-if="!selectedRobotInfo.id">
+          <empty
+            title="暂无机器人数据"
+            content="您当前尚未添加任何机器人。"
+            operate-text="跳转创建"
+            @onOk="() => router.push('/home/robot')">
+            <template #icon>
+              <Icon icon="solar:ghost-broken" />
+            </template>
+          </empty>
         </div>
       </div>
     </div>
@@ -215,16 +240,28 @@ import { DataZoomComponent, GridComponent, TitleComponent, TooltipComponent } fr
 import VChart from 'vue-echarts'
 import { invoke } from '@tauri-apps/api/core'
 import { onMounted, onUnmounted } from 'vue'
+import Empty from '@/components/Empty.vue'
+import { useRouter } from 'vue-router'
+import RobotApi from '@/api/robot.js'
+import { useRobotStore } from '@/stores/useRobotStore.js'
+import RobotStatus from '@/constant/robotStatus.js'
+import RecordApi from '@/api/record.js'
 
 let timer = null
 
 use([CanvasRenderer, LineChart, GridComponent, TooltipComponent, TitleComponent, DataZoomComponent])
+const router = useRouter()
 const systemInfo = ref({})
+const robotData = ref([])
+const selectedRobotInfo = ref({})
+const robotStore = useRobotStore()
+const dayStatsInfo = ref({})
+const messageStatsInfo = ref({})
 
 //图表
 const chartOption = computed(() => {
-  const xdata = ['01', '02', '03', '04', '05', '06', '07']
-  const ydata = [324, 233, 653, 123, 334, 532, 213]
+  const xdata = dayStatsInfo.value.date ? dayStatsInfo.value.date : ['01', '02', '03', '04', '05', '06', '07']
+  const ydata = dayStatsInfo.value.value ? dayStatsInfo.value.value : [100, 200, 300, 300, 200, 100, 100]
   return {
     tooltip: {
       trigger: 'axis'
@@ -289,6 +326,47 @@ const chartOption = computed(() => {
   }
 })
 
+const getRobotStatus = computed(() => {
+  return (key) => {
+    const status = robotStore.robotStatus[key]
+    return RobotStatus.valueMap(status)
+  }
+})
+
+const onListRobot = () => {
+  RobotApi.list().then((res) => {
+    if (res.code === 0) {
+      robotData.value = res.data
+      if (res.data.length > 0) {
+        selectedRobotInfo.value = robotData.value[0]
+      }
+    }
+  })
+}
+
+const onGet7DayStats = (item) => {
+  RecordApi.get7DayStats(item.id).then((res) => {
+    if (res.code === 0) {
+      dayStatsInfo.value = res.data
+    }
+  })
+}
+
+const onGetMessageStats = (item) => {
+  RecordApi.getMessageStats().then((res) => {
+    if (res.code === 0) {
+      messageStatsInfo.value = res.data
+    }
+  })
+}
+
+watch(
+  () => selectedRobotInfo.value,
+  () => {
+    onGet7DayStats(selectedRobotInfo.value)
+  }
+)
+
 const formatBytes = (bytes) => {
   if (bytes === 0) return '0 B'
   const k = 1024
@@ -309,6 +387,8 @@ onMounted(() => {
   timer = setInterval(() => {
     handlerGetSystemInfo()
   }, 1500)
+  onListRobot()
+  onGetMessageStats()
 })
 
 onUnmounted(() => {
@@ -374,6 +454,10 @@ onUnmounted(() => {
         display: flex;
         align-items: center;
         gap: 4px;
+
+        &.error {
+          color: var(--error-color);
+        }
       }
 
       .dash-message__bottom--wrapper {
@@ -443,11 +527,22 @@ onUnmounted(() => {
         padding: 10px;
         cursor: pointer;
 
+        .dash-info__card-avatar {
+          flex-shrink: 0;
+          width: 32px;
+          height: 32px;
+          background-color: #fff;
+          border-radius: 8px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
         &.active {
           background-color: rgba(var(--primary-color), 0.1);
         }
 
-        &:hover {
+        &:not(.active):hover {
           background-color: rgba(var(--primary-color), 0.05);
         }
       }
@@ -465,6 +560,17 @@ onUnmounted(() => {
         padding: 10px 20px;
         display: flex;
         border-bottom: 1px var(--card-bg) solid;
+
+        .dash-info__details--avatar {
+          flex-shrink: 0;
+          width: 40px;
+          height: 40px;
+          background-color: #fff;
+          border-radius: 8px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
       }
 
       .dash-info__details-chart {
