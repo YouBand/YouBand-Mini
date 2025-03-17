@@ -2,6 +2,7 @@ import Database from '@tauri-apps/plugin-sql'
 import RoleDB from '@/db/role.js'
 import ModelDB from '@/db/model.js'
 import RobotDB from '@/db/robot.js'
+import RecordDB from '@/db/record.js'
 
 export let db
 
@@ -15,7 +16,12 @@ export async function crateInit() {
   if (!db) {
     db = await connectInit()
   }
-  const crateTables = [RoleDB.createRoleTable(), ModelDB.createModelTable(), RobotDB.createRobotTable()]
+  const crateTables = [
+    RoleDB.createRoleTable(),
+    ModelDB.createModelTable(),
+    RobotDB.createRobotTable(),
+    RecordDB.createRecordTable()
+  ]
   Promise.allSettled(crateTables).then((res) => {
     console.log('数据库初始化成功')
   })

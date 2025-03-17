@@ -2,6 +2,8 @@ import WsUtil from '@/utils/ws.js'
 import AI from '@/ai/ai.js'
 import { useRobotStore } from '@/stores/useRobotStore.js'
 import RobotStatus from '@/constant/robotStatus.js'
+import RecordDB from '@/db/record.js'
+import RecordType from '@/constant/recordType.js'
 
 const robotStore = useRobotStore()
 
@@ -12,7 +14,8 @@ class NapCatRobot {
     if (NapCatRobot.connects.get(param.id)) {
       return
     }
-    console.log(`${param.name},建立NapCat连接`)
+    console.log(`${param.name}，建立NapCat连接`)
+    NapCatRobot.crateRecord(param.id, RecordType.Info, `${param.name}，建立NapCat连接`)
     let connectInfo = {}
     //获取机器人信息
     connectInfo.robotContent = JSON.parse(param.robotContent)
@@ -25,6 +28,7 @@ class NapCatRobot {
       connectInfo.robotContent.webSocket,
       (msg) => {
         if (typeof msg === 'string') {
+          NapCatRobot.crateRecord(param.id, RecordType.Error, msg)
           NapCatRobot.closeContent(param)
           return
         }
@@ -32,9 +36,10 @@ class NapCatRobot {
           NapCatRobot.reply(param.id, JSON.parse(msg.data))
         }
       },
-      () => {
+      (e) => {
         NapCatRobot.closeContent(param)
         robotStore.setRobotStatus(param.id, RobotStatus.Error)
+        NapCatRobot.crateRecord(param.id, RecordType.Error, e)
       }
     ).then((ws) => {
       connectInfo.ws = ws
@@ -48,12 +53,18 @@ class NapCatRobot {
     if (connectInfo) {
       connectInfo.ws.disconnect()
       console.log(`${param.name},NapCat连接已关闭`)
+      NapCatRobot.crateRecord(param.id, RecordType.Info, `${param.name}，NapCat连接已关闭`)
     }
     NapCatRobot.connects.delete(param.id)
     robotStore.setRobotStatus(param.id, RobotStatus.NoRun)
   }
 
+  static crateRecord(produceId, type, recordContent, targetInfo) {
+    RecordDB.create({ produceId, type, recordContent, targetInfo }).then()
+  }
+
   static async reply(key, data) {
+    console.log(data)
     if (data['message'] && !data['message_sent_type']) {
       const msgs = data['message']
       //获取文本消息
@@ -67,13 +78,28 @@ class NapCatRobot {
           isAt = true
         }
       }
+      //获取对应的ws连接
       const connectInfo = NapCatRobot.connects.get(key)
       if (connectInfo.ws && textMsg) {
         let replyRequest = null
         switch (data['message_type']) {
           case 'private':
+            const targetInfo = [
+              {
+                key: 'QQ',
+                value: data.sender['user_id']
+              },
+              {
+                key: '名字',
+                value: data.sender['nickname']
+              }
+            ]
+            //记录接收
+            NapCatRobot.crateRecord(key, RecordType.Receive, data['raw_message'], targetInfo)
             let replyMsg = await AI.getResponseContent(connectInfo.roleCharacter, connectInfo.modelContent, [], textMsg)
             replyRequest = NapCatRobot.buildPrivateMsg(data, replyMsg)
+            //记录返回
+            NapCatRobot.crateRecord(key, RecordType.Reply, replyMsg, targetInfo)
             break
           case 'group':
             if (isAt) {
@@ -83,7 +109,25 @@ class NapCatRobot {
                 [],
                 textMsg
               )
+              const targetInfo = [
+                {
+                  key: 'QQ群',
+                  value: data['group_id']
+                },
+                {
+                  key: 'QQ',
+                  value: data.sender['user_id']
+                },
+                {
+                  key: '名字',
+                  value: data.sender['nickname']
+                }
+              ]
+              //记录接收
+              NapCatRobot.crateRecord(key, RecordType.Receive, data['raw_message'], targetInfo)
               replyRequest = NapCatRobot.buildGroupMsg(data, replyMsg)
+              //记录返回
+              NapCatRobot.crateRecord(key, RecordType.Reply, replyMsg, targetInfo)
             }
             break
         }

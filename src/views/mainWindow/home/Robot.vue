@@ -64,17 +64,6 @@
           <div class="line-clamp-1">{{ item.messageNum }}</div>
         </div>
         <div class="flex text-[var(--minor-text-color)] justify-end mt-[10px]">
-          <n-popover trigger="hover">
-            <template #trigger>
-              <icon-hover-button
-                @click="() => handlerStopRobot(item)"
-                type="theme"
-                style="width: 36px; height: 36px; font-size: 20px">
-                <Icon icon="solar:laptop-minimalistic-bold" />
-              </icon-hover-button>
-            </template>
-            <span>记录</span>
-          </n-popover>
           <n-popover v-if="robotStore.robotStatus[item.id] !== RobotStatus.Running" trigger="hover">
             <template #trigger>
               <icon-hover-button
@@ -96,6 +85,17 @@
               </icon-hover-button>
             </template>
             <span>停止</span>
+          </n-popover>
+          <n-popover trigger="hover">
+            <template #trigger>
+              <icon-hover-button
+                @click="() => handlerRecordRobot(item)"
+                type="theme"
+                style="width: 36px; height: 36px; font-size: 20px">
+                <Icon icon="solar:laptop-minimalistic-bold" />
+              </icon-hover-button>
+            </template>
+            <span>记录</span>
           </n-popover>
           <icon-hover-button
             @click="() => handlerEditRobot(item)"
@@ -175,6 +175,50 @@
         </template>
       </n-card>
     </n-modal>
+    <n-modal v-model:show="showRecordRobot" to=".robot-container">
+      <div class="robot-record-wrapper">
+        <div class="robot-record">
+          <div class="robot-record-info">
+            <div class="flex gap-[10px]">
+              <div class="robot-record-info__avatar">
+                <img :src="selectedRobotInfo.avatar" class="h-[90%] w-[90%]" alt="" />
+              </div>
+              <div class="flex flex-col">
+                <div class="text-[18px] font-bold">{{ selectedRobotInfo.name }}</div>
+                <div>
+                  <n-tag
+                    size="small"
+                    :type="robotStore.robotStatus[selectedRobotInfo.id] === RobotStatus.Running ? 'primary' : 'error'">
+                    {{ getRobotStatus(selectedRobotInfo.id) }}
+                  </n-tag>
+                </div>
+              </div>
+            </div>
+            <icon-hover-button type="error" @click="showRecordRobot = false">
+              <Icon icon="carbon:close" />
+            </icon-hover-button>
+          </div>
+          <div class="robot-record-list">
+            <div v-for="item in robotRecordData" :class="['robot-record__card', `${item.type}`]">
+              <div class="flex justify-between">
+                <div class="flex gap-[10px] items-center">
+                  <n-tag size="small" :type="item.type">{{ getRecordType(item.type) }}</n-tag>
+                  <div v-for="info in getTargetInfo(item.targetInfo)">
+                    <div class="text-[var(--minor-text-color)]">
+                      <span class="text-[var(--minor-text-color)]">{{ info.key }}</span
+                      >:
+                      <span>{{ info.value }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-[var(--minor-text-color)]">{{ DateUtil.formatLocale(item.createTime) }}</div>
+              </div>
+              <div class="overflow-hidden">{{ item.recordContent }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </n-modal>
   </div>
 </template>
 <script setup>
@@ -190,6 +234,9 @@ import { useRobotStore } from '@/stores/useRobotStore.js'
 import RobotStatus from '@/constant/robotStatus.js'
 import robotStatus from '@/constant/robotStatus.js'
 import { useRouter } from 'vue-router'
+import RecordDB from '@/db/record.js'
+import RecordType from '@/constant/recordType.js'
+import DateUtil from '../../../utils/date.js'
 
 const router = useRouter()
 const typeValue = ref()
@@ -205,6 +252,9 @@ const modelData = ref([])
 const robotData = ref([])
 const isEditRobot = ref(false)
 const robotStore = useRobotStore()
+const showRecordRobot = ref(false)
+const robotRecordData = ref([])
+const selectedRobotInfo = ref({})
 
 // 表单验证规则
 const robotFormRules = {
@@ -310,19 +360,30 @@ watch(
   }
 )
 
+const handlerRecordRobot = (item) => {
+  showRecordRobot.value = true
+  selectedRobotInfo.value = item
+  RecordDB.page({ produceId: item.id, index: 0, num: 99 }).then((res) => {
+    if (res.code === 0) {
+      console.log(res)
+      robotRecordData.value = res.data
+    }
+  })
+}
+
+const getTargetInfo = (targetInfo) => {
+  return JSON.parse(targetInfo)
+}
+
 const getRobotStatus = computed(() => {
   return (key) => {
     const status = robotStore.robotStatus[key]
-    if (!status || status === RobotStatus.NoRun) {
-      return '未启动'
-    } else if (status === RobotStatus.Running) {
-      return '运行中'
-    } else if (status === RobotStatus.Error) {
-      return '错误'
-    } else {
-      return status
-    }
+    return RobotStatus.valueMap(status)
   }
+})
+
+const getRecordType = computed(() => {
+  return (type) => RecordType.valueMap(type)
 })
 
 const handlerAddRobot = () => {
@@ -469,6 +530,74 @@ onMounted(() => {
         display: flex;
         justify-content: center;
         align-items: center;
+      }
+    }
+  }
+
+  .robot-record-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    width: 80vw;
+    height: 80vh;
+
+    .robot-record {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+      background-color: var(--nav-bg);
+      padding: 20px;
+      border-radius: 8px;
+      color: var(--primary-text-color);
+
+      .robot-record-info {
+        height: 70px;
+        padding: 10px;
+        border-bottom: 1px var(--card-bg) solid;
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+
+        .robot-record-info__avatar {
+          height: 48px;
+          width: 48px;
+          border-radius: 8px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      }
+
+      .robot-record-list {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        overflow-y: scroll;
+
+        .robot-record__card {
+          padding: 10px;
+          background-color: var(--card-bg);
+          border-radius: 8px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          font-weight: 500;
+
+          &.error {
+            background-color: rgb(from var(--error-color) r g b / 5%);
+            color: var(--error-color);
+          }
+
+          &.info {
+            background-color: rgba(var(--primary-color), 0.05);
+            color: rgba(var(--primary-color));
+          }
+        }
       }
     }
   }

@@ -279,7 +279,7 @@ onMounted(async () => {
   }
 
   .role-details-card {
-    width: 600px;
+    width: 700px;
     overflow-y: scroll;
     height: 90vh;
 
