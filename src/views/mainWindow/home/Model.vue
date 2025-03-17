@@ -228,7 +228,41 @@ const modelManuData = [
   {
     avatar: '/volcEngine.svg',
     name: '火山引擎',
-    type: 'volc'
+    type: 'volc',
+    formField: [
+      { key: 'name', name: '名称', type: 'input', placeholder: '请输入名称' },
+      { key: 'apiKey', name: 'API-Key', type: 'input', placeholder: '请从火山引擎获取，并输入API密钥' },
+      { key: 'model', name: '模型', type: 'input', placeholder: '请输入模型，例如：qwq-plus' },
+      { key: 'temperature', name: '温度', type: 'slider', max: 2, min: 0, step: 0.1, defaultValue: 1.3 },
+      { key: 'maxToken', name: '最大Token数', type: 'slider', max: 5000, min: 20, step: 1, defaultValue: 2000 }
+    ],
+    formRules: {
+      apiKey: [
+        {
+          required: true,
+          message: '请输入API-Key',
+          trigger: ['input', 'blur']
+        }
+      ],
+      name: [
+        {
+          required: true,
+          message: '请输入名称',
+          trigger: ['input', 'blur']
+        }
+      ],
+      model: [
+        {
+          required: true,
+          message: '请输入模型',
+          trigger: ['input', 'blur']
+        }
+      ]
+    },
+    operate: {
+      name: '如何使用火山引擎',
+      url: 'https://www.volcengine.com/'
+    }
   }
 ]
 
