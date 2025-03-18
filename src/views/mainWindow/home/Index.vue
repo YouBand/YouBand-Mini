@@ -32,6 +32,7 @@
         <div class="nva-left__items">
           <div
             v-for="item in navigations"
+            :key="item.path"
             :class="[
               'nav-left__item',
               { active: route.path === item.path },
@@ -140,9 +141,9 @@ const handleMinimize = () => {
   WebviewWindow.getCurrent().minimize()
 }
 
-const handleClose = () => {
-  WebviewWindow.getCurrent().close()
-}
+// const handleClose = () => {
+//   WebviewWindow.getCurrent().close()
+// }
 
 const handleHide = () => {
   WebviewWindow.getCurrent().hide()

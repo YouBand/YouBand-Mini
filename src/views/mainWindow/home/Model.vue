@@ -4,7 +4,7 @@
     <div class="flex gap-[20px] flex-1 overflow-hidden items-start">
       <div class="model-list">
         <div class="text-[18px]">已添加的模型</div>
-        <div v-for="item in modelData" class="model-list__card flex-col lg:flex-row">
+        <div v-for="item in modelData" :key="item.id" class="model-list__card flex-col lg:flex-row">
           <div class="flex gap-[10px] items-center">
             <div class="model-list__card--avatar">
               <img :src="item.avatar" class="h-[90%]" alt="" />
@@ -45,7 +45,11 @@
       </div>
       <div class="model-manu-list">
         <div class="text-[18px]">可添加的模型</div>
-        <div v-for="item in modelManuData" class="model-manu-list__card" @click="() => handlerAddModel(item)">
+        <div
+          v-for="item in modelManuData"
+          :key="item.type"
+          class="model-manu-list__card"
+          @click="() => handlerAddModel(item)">
           <div class="flex items-center gap-[5px] overflow-x-hidden">
             <div class="model-manu-list__card--avatar">
               <img :src="item.avatar" class="h-[90%]" alt="" />
@@ -66,7 +70,11 @@
         :bordered="false"
         footer-class="flex justify-between gap-[10px] items-center">
         <n-form ref="addModelForm" :model="modelInfo" :rules="addModelTypeContent.formRules">
-          <n-form-item v-for="item in addModelTypeContent.formField" :path="item.key" :label="item.name">
+          <n-form-item
+            v-for="item in addModelTypeContent.formField"
+            :key="item.key"
+            :path="item.key"
+            :label="item.name">
             <n-input
               v-if="item.type === 'input'"
               v-model:value="modelInfo[item.key]"

@@ -18,7 +18,6 @@ const themeStore = useThemeStore()
 onBeforeMount(async () => {
   //数据库相关
   await crateInit()
-
   await themeStore.setTheme(themeStore.theme)
 })
 

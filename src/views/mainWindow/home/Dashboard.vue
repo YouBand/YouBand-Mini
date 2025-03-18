@@ -163,6 +163,7 @@
         <div class="text-[18px] select-none">机器人</div>
         <div
           v-for="item in robotData"
+          :key="item.id"
           :class="['dash-info__list-card', { active: item.id === selectedRobotInfo.id }]"
           @click="() => (selectedRobotInfo = item)">
           <div class="flex items-center">
@@ -352,7 +353,7 @@ const onGet7DayStats = (item) => {
   })
 }
 
-const onGetMessageStats = (item) => {
+const onGetMessageStats = () => {
   RecordApi.getMessageStats().then((res) => {
     if (res.code === 0) {
       messageStatsInfo.value = res.data

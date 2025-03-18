@@ -12,6 +12,7 @@
         </div>
         <div
           v-for="item in chatData"
+          :key="item.id"
           @click="selectedChatInfo = item"
           :class="['chat-list__card', { active: item.id === selectedChatInfo.id }]">
           <div class="chat-list__card--name truncate">{{ item.name }}</div>

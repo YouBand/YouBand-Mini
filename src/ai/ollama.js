@@ -20,7 +20,7 @@ class OllamakAI {
       }
     })
       .then((res) => res['message']['content'])
-      .catch((err) => {
+      .catch(() => {
         return '好像有只bug在开派对？我正在驱散它们，请稍后重试~'
       })
   }

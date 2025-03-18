@@ -35,7 +35,7 @@
         :options="statusOption" />
     </div>
     <div v-if="robotFilterData.length > 0" class="robot-list">
-      <div v-for="item in robotFilterData" class="robot-list-card">
+      <div v-for="item in robotFilterData" :key="item.id" class="robot-list-card">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-[5px] w-[80%]">
             <div class="robot-list__card--avatar">
@@ -166,6 +166,7 @@
           </n-form-item>
           <n-form-item
             v-for="item in selectTypeOption.formField"
+            :key="item.key"
             :path="`robotContent[${item.key}]`"
             :label="item.name"
             :rule="item.rule">
@@ -220,11 +221,11 @@
             </div>
           </div>
           <div v-if="robotRecordData.length > 0" class="robot-record-list">
-            <div v-for="item in robotRecordData" :class="['robot-record__card', `${item.type}`]">
+            <div v-for="item in robotRecordData" :class="['robot-record__card', `${item.type}`]" :key="item.id">
               <div class="flex justify-between">
                 <div class="flex gap-[10px] items-center">
                   <n-tag size="small" :type="item.type">{{ getRecordType(item.type) }}</n-tag>
-                  <div v-for="info in getTargetInfo(item.targetInfo)">
+                  <div v-for="info in getTargetInfo(item.targetInfo)" :key="item.id + info.key">
                     <div class="text-[var(--minor-text-color)]">
                       <span class="text-[var(--minor-text-color)]">{{ info.key }}</span
                       >:

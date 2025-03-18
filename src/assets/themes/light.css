@@ -1,16 +1,16 @@
 body[data-theme='light'] {
-    /*主色*/
-    --primary-color: 0, 126, 252;
-    /*主字体颜色*/
-    --primary-text-color: #000;
-    /*次要的字体颜色*/
-    --minor-text-color: #6b7280;
-    /*导航背景色*/
-    --nav-bg: #fff;
-    /*主容器背景*/
-    --main-container-bg: #f9fafb;
-    /*卡片颜色*/
-    --card-bg: #F3F4F6;
-    /*次要卡片颜色*/
-    --minor-card-bg: #f9fafb;
+  /*主色*/
+  --primary-color: 0, 126, 252;
+  /*主字体颜色*/
+  --primary-text-color: #000;
+  /*次要的字体颜色*/
+  --minor-text-color: #6b7280;
+  /*导航背景色*/
+  --nav-bg: #fff;
+  /*主容器背景*/
+  --main-container-bg: #f9fafb;
+  /*卡片颜色*/
+  --card-bg: #f3f4f6;
+  /*次要卡片颜色*/
+  --minor-card-bg: #f9fafb;
 }

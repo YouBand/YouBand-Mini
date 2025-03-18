@@ -11,7 +11,7 @@
     </div>
     <!--角色列表-->
     <div v-if="roleData.length > 0" class="role-list">
-      <div v-for="item in roleData" class="role-card">
+      <div v-for="item in roleData" class="role-card" :key="item.id">
         <div class="role-card__avatar">
           <div
             class="w-[50px] h-[50px] text-[40px] rounded-full text-[--minor-text-color] flex justify-center items-center">
@@ -75,7 +75,7 @@
           </n-form-item>
           <n-form-item path="age" label="年龄">
             <n-input
-              :allow-input="(value: string) => !value || /^\d+$/.test(value)"
+              :allow-input="(value) => !value || /^\d+$/.test(value)"
               v-model:value="roleInfo.age"
               @keydown.enter.prevent
               placeholder="请输入角色年龄" />
@@ -121,8 +121,8 @@
             </div>
           </div>
           <div
-            v-for="attr in parseCharacterContent(detailsRoleModal.character)"
-            :key="attr.key"
+            v-for="(attr, index) in parseCharacterContent(detailsRoleModal.character)"
+            :key="index"
             class="role-character-card">
             <div class="role-character-key">
               <div class="w-[8px] h-[8px] rounded-full bg-[rgba(var(--primary-color))]"></div>

@@ -24,7 +24,7 @@ export async function crateInit() {
     RecordDB.createRecordTable(),
     ChatDB.createChatTable()
   ]
-  Promise.allSettled(crateTables).then((res) => {
+  Promise.allSettled(crateTables).then(() => {
     console.log('数据库初始化成功')
   })
 }

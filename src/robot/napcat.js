@@ -82,15 +82,15 @@ class NapCatRobot {
       if (connectInfo.ws && textMsg) {
         let replyRequest = null
         switch (data['message_type']) {
-          case 'private':
-            const targetInfo = [
+          case 'private': {
+            let targetInfo = [
               {
                 key: 'QQ',
-                value: data.sender['user_id']
+                value: data.sender?.['user_id'] ?? '未知'
               },
               {
                 key: '名字',
-                value: data.sender['nickname']
+                value: data.sender?.['nickname'] ?? '未知'
               }
             ]
             //记录接收
@@ -103,7 +103,8 @@ class NapCatRobot {
             //记录返回
             NapCatRobot.crateRecord(key, RecordType.Reply, replyMsg, targetInfo, data['user_id'])
             break
-          case 'group':
+          }
+          case 'group': {
             if (isAt) {
               let replyMsg = await AI.getResponseContent(connectInfo.roleCharacter, connectInfo.modelContent, textMsg, {
                 produceId: key,
@@ -116,11 +117,11 @@ class NapCatRobot {
                 },
                 {
                   key: 'QQ',
-                  value: data.sender['user_id']
+                  value: data.sender?.['user_id'] ?? '未知'
                 },
                 {
                   key: '名字',
-                  value: data.sender['nickname']
+                  value: data.sender?.['nickname'] ?? '未知'
                 }
               ]
               //记录接收
@@ -130,6 +131,7 @@ class NapCatRobot {
               NapCatRobot.crateRecord(key, RecordType.Reply, replyMsg, targetInfo, data['group_id'])
             }
             break
+          }
         }
         if (replyRequest) {
           connectInfo.ws.send(JSON.stringify(replyRequest))

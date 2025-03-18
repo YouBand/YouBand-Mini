@@ -6,37 +6,36 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @font-face {
-    font-family: 'Alimama';
-    src: url('/src/assets/fonts/Alimama.woff2') format('woff2');
-    font-display: swap;
+  font-family: 'Alimama';
+  src: url('/src/assets/fonts/Alimama.woff2') format('woff2');
+  font-display: swap;
 }
 
 :root {
-    --error-color: #FF4C4C;
+  --error-color: #ff4c4c;
 }
 
 body,
 html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    font-family: 'Alimama', Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Alimama', Helvetica, sans-serif;
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-    border-radius: 3px;
-    background: var(--card-bg);
-    border: 1px rgba(0, 0, 0, 0.1) solid;;
+  border-radius: 3px;
+  background: var(--card-bg);
+  border: 1px rgba(0, 0, 0, 0.1) solid;
 }

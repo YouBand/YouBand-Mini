@@ -9,10 +9,24 @@ export default [
   },
   {
     name: 'app/files-to-ignore',
-    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**']
+    ignores: [
+      '**/dist/**',
+      '**/dist-ssr/**',
+      '**/coverage/**',
+      '**/node_modules/**',
+      '**/src-tauri/**',
+      '**/.idea/**',
+      '**/vscode/**'
+    ]
   },
 
   js.configs.recommended,
   ...pluginVue.configs['flat/essential'],
-  skipFormatting
+  skipFormatting,
+  {
+    rules: {
+      'vue/multi-word-component-names': 'off',
+      'no-undef': 'off'
+    }
+  }
 ]
