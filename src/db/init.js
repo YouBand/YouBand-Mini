@@ -3,6 +3,7 @@ import RoleDB from '@/db/role.js'
 import ModelDB from '@/db/model.js'
 import RobotDB from '@/db/robot.js'
 import RecordDB from '@/db/record.js'
+import ChatDB from '@/db/chat.js'
 
 export let db
 
@@ -20,7 +21,8 @@ export async function crateInit() {
     RoleDB.createRoleTable(),
     ModelDB.createModelTable(),
     RobotDB.createRobotTable(),
-    RecordDB.createRecordTable()
+    RecordDB.createRecordTable(),
+    ChatDB.createChatTable()
   ]
   Promise.allSettled(crateTables).then((res) => {
     console.log('数据库初始化成功')

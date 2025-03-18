@@ -15,6 +15,9 @@ const RecordApi = {
   },
   clean(param) {
     return RecordDB.clean(param)
+  },
+  context(param) {
+    return RecordDB.context(param)
   }
 }
 export default RecordApi

@@ -59,12 +59,11 @@ class NapCatRobot {
     robotStore.setRobotStatus(param.id, RobotStatus.NoRun)
   }
 
-  static crateRecord(produceId, type, recordContent, targetInfo) {
-    RecordApi.create({ produceId, type, recordContent, targetInfo }).then()
+  static crateRecord(produceId, type, recordContent, targetInfo, targetKey) {
+    RecordApi.create({ produceId, type, recordContent, targetInfo, targetKey }).then()
   }
 
   static async reply(key, data) {
-    console.log(data)
     if (data['message'] && !data['message_sent_type']) {
       const msgs = data['message']
       //获取文本消息
@@ -95,20 +94,21 @@ class NapCatRobot {
               }
             ]
             //记录接收
-            NapCatRobot.crateRecord(key, RecordType.Receive, data['raw_message'], targetInfo)
-            let replyMsg = await AI.getResponseContent(connectInfo.roleCharacter, connectInfo.modelContent, [], textMsg)
+            NapCatRobot.crateRecord(key, RecordType.Receive, data['raw_message'], targetInfo, data['user_id'])
+            let replyMsg = await AI.getResponseContent(connectInfo.roleCharacter, connectInfo.modelContent, textMsg, {
+              produceId: key,
+              targetKey: data['user_id']
+            })
             replyRequest = NapCatRobot.buildPrivateMsg(data, replyMsg)
             //记录返回
-            NapCatRobot.crateRecord(key, RecordType.Reply, replyMsg, targetInfo)
+            NapCatRobot.crateRecord(key, RecordType.Reply, replyMsg, targetInfo, data['user_id'])
             break
           case 'group':
             if (isAt) {
-              let replyMsg = await AI.getResponseContent(
-                connectInfo.roleCharacter,
-                connectInfo.modelContent,
-                [],
-                textMsg
-              )
+              let replyMsg = await AI.getResponseContent(connectInfo.roleCharacter, connectInfo.modelContent, textMsg, {
+                produceId: key,
+                targetKey: data['group_id']
+              })
               const targetInfo = [
                 {
                   key: 'QQ群',
@@ -124,10 +124,10 @@ class NapCatRobot {
                 }
               ]
               //记录接收
-              NapCatRobot.crateRecord(key, RecordType.Receive, data['raw_message'], targetInfo)
+              NapCatRobot.crateRecord(key, RecordType.Receive, data['raw_message'], targetInfo, data['group_id'])
               replyRequest = NapCatRobot.buildGroupMsg(data, replyMsg)
               //记录返回
-              NapCatRobot.crateRecord(key, RecordType.Reply, replyMsg, targetInfo)
+              NapCatRobot.crateRecord(key, RecordType.Reply, replyMsg, targetInfo, data['group_id'])
             }
             break
         }

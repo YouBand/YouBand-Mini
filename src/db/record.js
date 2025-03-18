@@ -10,6 +10,7 @@ class RecordDB {
       (
           "id"              TEXT    NOT NULL,
           "produceId"       TEXT    NOT NULL,
+          "targetKey"       TEXT DEFAULT NULL,
           "targetInfo"      TEXT DEFAULT NULL,
           "type"            TEXT    NOT NULL,
           "recordContent"   TEXT DEFAULT NULL,
@@ -25,9 +26,18 @@ class RecordDB {
     const timestamp = Date.now()
     const result = await db.execute(
       `INSERT INTO record 
-        (id, produceId, targetInfo, type, recordContent, createTime, updateTime) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-      [nanoid(), param.produceId, param.targetInfo, param.type, param.recordContent || null, timestamp, timestamp]
+        (id, produceId, targetInfo, type, recordContent, targetKey, createTime, updateTime) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [
+        nanoid(),
+        param.produceId,
+        param.targetInfo,
+        param.type,
+        param.recordContent || null,
+        param.targetKey || null,
+        timestamp,
+        timestamp
+      ]
     )
     if (result) {
       return ResultUtil.success(result)
@@ -178,6 +188,29 @@ class RecordDB {
     } else {
       return ResultUtil.failure()
     }
+  }
+
+  //上下文
+  static async context(param) {
+    let where = ' produceId = $1'
+    if (param.targetKey) {
+      where += ' and targetKey = $4'
+    }
+    const result = await db.select(
+      `SELECT * FROM record WHERE ${where} and type IN ('reply', 'receive')
+       ORDER BY 
+         createTime DESC,
+         CASE WHEN type = 'reply' THEN 0 ELSE 1 END 
+       LIMIT $2 OFFSET $3
+       `,
+      [param.produceId, param.num, 0, param.targetKey]
+    )
+    let context = []
+    for (let i = result.length - 1; i >= 0; i--) {
+      let msg = result[i]
+      context.push({ role: msg.type === 'reply' ? 'assistant' : 'user', content: msg.recordContent })
+    }
+    return ResultUtil.success(context)
   }
 }
 

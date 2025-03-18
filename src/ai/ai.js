@@ -2,6 +2,7 @@ import DeepSeekAI from '@/ai/deepseek.js'
 import OllamakAI from '@/ai/ollama.js'
 import QwenAI from '@/ai/qwen.js'
 import VolcAI from '@/ai/volc.js'
+import RecordApi from '@/api/record.js'
 
 class AI {
   static ais = {
@@ -11,7 +12,12 @@ class AI {
     volc: VolcAI
   }
 
-  static async getResponseContent(roleCharacter, modelContent, context, message) {
+  static async getResponseContent(roleCharacter, modelContent, message, keyInfo, context) {
+    //根据key获取上下文
+    if (!context || context.length <= 0) {
+      let result = await RecordApi.context({ produceId: keyInfo.produceId, targetKey: keyInfo.targetKey, num: 15 })
+      context = result.data
+    }
     const ai = AI.ais[modelContent.type]
     if (ai) {
       return await AI.ais[modelContent.type].getResponseContent(roleCharacter, modelContent, context, message)

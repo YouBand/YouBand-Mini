@@ -189,10 +189,10 @@
             <div class="flex flex-col justify-center ml-[10px]">
               <div class="text-[18px]">{{ selectedRobotInfo.name }}</div>
               <div class="flex justify-center items-center mt-[4px] gap-[20px] text-[14px]">
-                <div>
+                <div class="max-w-[150px] truncate">
                   <span class="text-[var(--minor-text-color)] mr-[4px]">角色:</span>{{ selectedRobotInfo.roleName }}
                 </div>
-                <div>
+                <div class="max-w-[150px] truncate">
                   <span class="text-[var(--minor-text-color)] mr-[4px]">模型:</span> {{ selectedRobotInfo.modelName }}
                 </div>
                 <n-tag
