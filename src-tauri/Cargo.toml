@@ -1,6 +1,6 @@
 [package]
 name = "YouBand-Mini"
-version = "0.1.0"
+version = "1.0.1"
 description = "IM robot platform"
 authors = ["Heath"]
 edition = "2021"
