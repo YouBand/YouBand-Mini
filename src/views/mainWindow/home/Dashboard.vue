@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
     <div class="dash-title">
-      <div class="dash-title__h1">Heath，欢迎回来</div>
+      <div class="dash-title__h1">您好，欢迎回来</div>
       <div class="dash-title__h2">这是您的实时数据概览</div>
     </div>
     <!-- 统计卡片 -->

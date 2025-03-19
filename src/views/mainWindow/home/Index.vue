@@ -6,8 +6,24 @@
         <div class="nav-title__logo--text">友伴-YouBand</div>
       </div>
       <div class="nav-title__content">
+        <div class="nav-title__info">
+          <icon-hover-button
+            style="font-size: 22px; width: 22px; height: 22px"
+            type="minor"
+            @click="() => shell.open('https://space.bilibili.com/135427028')">
+            <Icon icon="tabler:brand-bilibili" />
+          </icon-hover-button>
+          <icon-hover-button
+            style="font-size: 22px; width: 22px; height: 22px"
+            type="minor"
+            @click="() => shell.open('https://github.com/YouBand/YouBand-Mini')">
+            <Icon icon="tabler:brand-github" />
+          </icon-hover-button>
+        </div>
         <div class="nav-title__user">
-          <div class="nav-title__user--avatar"></div>
+          <div class="nav-title__user--avatar">
+            <img src="/avatar.png" alt="" />
+          </div>
           <div class="nav-title__user--name">Heath</div>
         </div>
         <n-divider vertical />
@@ -21,7 +37,7 @@
             @click="() => (isMaximize ? handleUnMaximize() : handleMaximize())">
             <Icon :icon="isMaximize ? 'tabler:minimize' : 'tabler:maximize'" />
           </icon-hover-button>
-          <icon-hover-button type="error" @click="handleHide">
+          <icon-hover-button type="error" @click="handleClose">
             <Icon icon="carbon:close" />
           </icon-hover-button>
         </div>
@@ -33,14 +49,10 @@
           <div
             v-for="item in navigations"
             :key="item.path"
-            :class="[
-              'nav-left__item',
-              { active: route.path === item.path },
-              isCollapsed ? 'justify-center' : 'justify-start'
-            ]"
+            :class="['nav-left__item', { active: isActive(item) }, isCollapsed ? 'justify-center' : 'justify-start']"
             @click="() => router.push(item.path)">
             <Icon
-              :icon="route.path === item.path ? item.activeIcon : item.icon"
+              :icon="isActive(item) ? item.activeIcon : item.icon"
               class="nav-left__item--icon"
               :style="{ marginRight: isCollapsed ? '0' : '20px' }" />
             <div :class="['nav-left__item--label', isCollapsed ? 'hidden' : 'block']">
@@ -52,16 +64,16 @@
           <div
             :class="[
               'nav-left__bottom-item',
-              { sun: themeStore.theme === 'dark' },
+              { sun: settingStore.general.theme === 'dark' },
               isCollapsed ? 'justify-center' : 'justify-start'
             ]"
             @click="handlerChangeTheme">
             <Icon
-              :icon="themeStore.theme === 'light' ? 'solar:moon-stars-broken' : 'solar:sun-2-line-duotone'"
+              :icon="settingStore.general.theme === 'light' ? 'solar:moon-stars-broken' : 'solar:sun-2-line-duotone'"
               class="nav-left__bottom-item--icon"
               :style="{ marginRight: isCollapsed ? '0' : '20px' }" />
             <div :class="['nav-left__bottom-item--label', isCollapsed ? 'hidden' : 'block']">
-              {{ themeStore.theme === 'light' ? '浅色模式' : '深色模式' }}
+              {{ settingStore.general.theme === 'light' ? '浅色模式' : '深色模式' }}
             </div>
           </div>
           <div :class="['nav-left__bottom-item', isCollapsed ? 'justify-center' : 'justify-start']" @click="toggleMenu">
@@ -84,19 +96,26 @@
   </div>
 </template>
 <script setup>
-import { useThemeStore } from '@/stores/useThemeStore.js'
 import { Icon } from '@iconify/vue'
 import IconHoverButton from '@/components/IconHoverButton.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { WebviewWindow } from '@tauri-apps/api/webviewWindow'
+import * as shell from '@tauri-apps/plugin-shell'
+import { useSettingStore } from '@/stores/useSettingStore.js'
+import { exit } from '@tauri-apps/plugin-process'
 
 const route = useRoute()
 const router = useRouter()
-const isCollapsed = ref(false)
-const themeStore = useThemeStore()
+const settingStore = useSettingStore()
 const isMaximize = ref(false)
 let unResize
+
+const isCollapsed = computed(() => settingStore.general.isMenuFold)
+
+const isActive = computed(() => (item) => {
+  return route.matched.some((record) => record.path === item.path)
+})
 
 const navigations = [
   {
@@ -131,7 +150,7 @@ const navigations = [
   },
   {
     label: '系统设置',
-    path: '/home/set',
+    path: '/home/setting/general',
     icon: 'solar:settings-line-duotone',
     activeIcon: 'solar:settings-bold'
   }
@@ -141,12 +160,12 @@ const handleMinimize = () => {
   WebviewWindow.getCurrent().minimize()
 }
 
-// const handleClose = () => {
-//   WebviewWindow.getCurrent().close()
-// }
-
-const handleHide = () => {
-  WebviewWindow.getCurrent().hide()
+const handleClose = () => {
+  if (settingStore.general.closePanel === 'close') {
+    exit()
+  } else {
+    WebviewWindow.getCurrent().hide()
+  }
 }
 
 const handleMaximize = () => {
@@ -158,11 +177,11 @@ const handleUnMaximize = () => {
 }
 
 const toggleMenu = () => {
-  isCollapsed.value = !isCollapsed.value
+  settingStore.setIsMenuFold(!isCollapsed.value)
 }
 
 const handlerChangeTheme = () => {
-  themeStore.setTheme(themeStore.theme === 'light' ? 'dark' : 'light')
+  settingStore.setTheme(settingStore.general.theme === 'light' ? 'dark' : 'light')
 }
 
 onMounted(() => {
@@ -217,6 +236,17 @@ onUnmounted(() => {
       align-items: center;
       gap: 10px;
 
+      .nav-title__info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 5px 20px;
+        border-radius: 20px;
+        border: 1px rgba(var(--primary-color), 0.3) solid;
+        color: var(--minor-text-color);
+        margin-right: 10px;
+      }
+
       .nav-title__user {
         display: flex;
         align-items: center;
@@ -228,6 +258,14 @@ onUnmounted(() => {
           width: 30px;
           background-color: #6b7280;
           border-radius: 5px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: #fff;
+          font-size: 18px;
+          line-height: 18px;
+          font-weight: 500;
+          overflow: hidden;
         }
 
         .nav-title__user--name {

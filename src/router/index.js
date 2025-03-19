@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import SettingRouter from '@/router/setting.js'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,9 +45,11 @@ const router = createRouter({
           component: () => import('@/views/mainWindow/home/Model.vue')
         },
         {
-          path: 'set',
-          name: 'set',
-          component: () => import('@/views/mainWindow/home/Dashboard.vue')
+          path: 'setting',
+          name: 'setting',
+          component: () => import('@/views/mainWindow/home/setting/Setting.vue'),
+          redirect: '/home/setting/general',
+          children: SettingRouter
         }
       ]
     }

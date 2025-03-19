@@ -11,14 +11,14 @@
 </template>
 
 <script setup>
-import { useThemeStore } from '@/stores/useThemeStore.js'
 import { crateInit } from '@/db/init.js'
+import { useSettingStore } from '@/stores/useSettingStore.js'
 
-const themeStore = useThemeStore()
+const settingStore = useSettingStore()
 onBeforeMount(async () => {
   //数据库相关
   await crateInit()
-  await themeStore.setTheme(themeStore.theme)
+  await settingStore.setTheme(settingStore.general.theme)
 })
 
 const themeOverrides = {

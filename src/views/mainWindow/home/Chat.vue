@@ -364,7 +364,6 @@ onMounted(() => {
 
       .chat-list__card {
         height: 50px;
-        background-color: var(--card-bg);
         padding: 10px;
         border-radius: 8px;
         cursor: pointer;
@@ -382,11 +381,11 @@ onMounted(() => {
         }
 
         &.active {
-          background-color: rgba(var(--primary-color), 0.1);
+          background-color: var(--card-bg);
         }
 
         &:not(.active):hover {
-          background-color: rgba(var(--primary-color), 0.05);
+          background-color: var(--minor-card-bg);
         }
       }
     }
