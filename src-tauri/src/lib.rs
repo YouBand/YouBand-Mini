@@ -1,9 +1,9 @@
-use tauri::{Manager, WindowEvent};
-mod user_cmd;
-use user_cmd::{get_user_info, save_user_info};
-mod sys_cmd;
-use sys_cmd::get_system_info;
+mod cmd;
 mod tray;
+mod webserver;
+
+use tauri::{Manager, WindowEvent};
+use cmd::{user_cmd,sys_cmd,web_cmd};
 use tauri_plugin_autostart::MacosLauncher;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -37,9 +37,11 @@ pub fn run() {
             _ => (),
         })
         .invoke_handler(tauri::generate_handler![
-            get_user_info,
-            save_user_info,
-            get_system_info
+            user_cmd::get_user_info,
+            user_cmd::save_user_info,
+            sys_cmd::get_system_info,
+            web_cmd::start_webserver,
+            web_cmd::stop_webserver
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
