@@ -296,8 +296,10 @@ onUnmounted(() => {
       color: var(--minor-text-color);
       padding: 10px;
       overflow: hidden;
-      @apply transition-all duration-300 ease-in-out;
       flex-shrink: 0;
+      transition-property: transform, opacity, box-shadow, width;
+      transition-duration: 300ms;
+      transition-timing-function: ease-in-out;
 
       .nva-left__items {
         display: flex;

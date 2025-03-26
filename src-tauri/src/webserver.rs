@@ -1,7 +1,8 @@
 use std::sync::{Arc, Mutex};
 use axum::{
     routing::post,
-    Router, Json, extract::State,
+    Router, Json,
+    extract::{State, Path},
     response::IntoResponse,
     http::StatusCode,
 };
@@ -13,14 +14,14 @@ use std::net::SocketAddr;
 use tokio::task::JoinHandle;
 use tokio::sync::oneshot;
 use std::time::Duration;
+use serde_json::Value as JsonValue;
 
 // 定义请求和响应的数据结构
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ApiRequest {
-    pub id: String,
-    pub method: String,
     pub params: serde_json::Value,
     pub timestamp: Option<String>,
+    pub path: Option<String>,
 }
 
 // 定义服务器控制结构
@@ -48,29 +49,21 @@ pub struct AppState {
 // 定义Web服务器状态
 #[derive(Clone)]
 struct WebServerState {
-    app_state: Arc<AppState>,
     app_handle: tauri::AppHandle,
 }
 
 // 处理API请求的处理函数
 async fn handle_api_request(
     State(state): State<WebServerState>,
-    Json(payload): Json<ApiRequest>,
+    Path(path): Path<String>,
+    Json(body): Json<JsonValue>,
 ) -> impl IntoResponse {
-    // 检查服务器是否在运行
-    let is_running = *state.app_state.is_running.lock().unwrap();
-    if !is_running {
-        return (StatusCode::SERVICE_UNAVAILABLE, Json(serde_json::json!({
-            "status": "error",
-            "message": "服务器已停止"
-        })));
-    }
 
-    // 添加时间戳
-    let mut request = payload;
-    if request.timestamp.is_none() {
-        request.timestamp = Some(chrono::Local::now().to_rfc3339());
-    }
+    let request = ApiRequest {
+        params: body.clone(),
+        timestamp: Some(chrono::Local::now().to_rfc3339()),
+        path:  Some(path.clone()),
+    };
 
     // 通过事件发送到前端
     let _ = state.app_handle.emit("new-api-call", &request);
@@ -103,18 +96,17 @@ pub async fn start_server(app_handle: tauri::AppHandle, app_state: Arc<AppState>
 
     // 创建Web服务器状态
     let state = WebServerState {
-        app_state: app_state.clone(),
         app_handle: app_handle.clone(),
     };
 
     // 创建路由
     let app = Router::new()
-        .route("/api", post(handle_api_request))
+        .route("/*path", post(handle_api_request))
         .with_state(state)
         .layer(cors);
 
     // 绑定地址
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
 
     // 创建关闭信号通道
     let (shutdown_tx, shutdown_rx) = oneshot::channel();

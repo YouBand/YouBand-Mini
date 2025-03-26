@@ -13,12 +13,23 @@
 <script setup>
 import { crateInit } from '@/db/init.js'
 import { useSettingStore } from '@/stores/useSettingStore.js'
+import GewechatRobot from '@/robot/gewechat.js'
+import { invoke } from '@tauri-apps/api/core'
 
 const settingStore = useSettingStore()
 onBeforeMount(async () => {
   //数据库相关
   await crateInit()
   await settingStore.setTheme(settingStore.general.theme)
+})
+
+onMounted(() => {
+  //开启web服务
+  invoke('start_webserver', { port: parseInt(settingStore.general.callbackPort) }).then(() => {
+    console.log('web服务开始运行')
+    //监听web服务
+    GewechatRobot.createWebListen()
+  })
 })
 
 const themeOverrides = {

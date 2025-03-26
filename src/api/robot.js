@@ -12,6 +12,9 @@ const RobotApi = {
   },
   update(param) {
     return RobotDB.update(param)
+  },
+  updateRobotContent(param) {
+    return RobotDB.updateRobotContent(param)
   }
 }
 export default RobotApi

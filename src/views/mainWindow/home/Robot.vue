@@ -251,7 +251,7 @@
 <script setup>
 import { Icon } from '@iconify/vue'
 import IconHoverButton from '@/components/IconHoverButton.vue'
-import { useDialog } from 'naive-ui'
+import { useDialog, useModal } from 'naive-ui'
 import { onMounted, watch } from 'vue'
 import RoleApi from '@/api/role.js'
 import ModelApi from '@/api/model.js'
@@ -283,6 +283,7 @@ const robotStore = useRobotStore()
 const showRecordRobot = ref(false)
 const robotRecordData = ref([])
 const selectedRobotInfo = ref({})
+const modal = useModal()
 
 // 表单验证规则
 const robotFormRules = {
@@ -353,7 +354,19 @@ const typeOptions = [
   {
     label: 'WX(Gewechat)',
     value: 'gewechat',
-    avatar: '/wx.svg'
+    avatar: '/wx.svg',
+    formField: [
+      {
+        key: 'url',
+        name: 'Gewechat服务地址',
+        placeholder: '例: http://127.0.0.1:2531',
+        rule: {
+          required: true,
+          message: '请输入Gewechat服务地址',
+          trigger: ['input', 'blur']
+        }
+      }
+    ]
   }
 ]
 
@@ -449,11 +462,11 @@ const handlerEditRobot = (item) => {
 }
 
 const handlerStartRobot = (item) => {
-  Robot.content(item)
+  Robot.connect(item, modal)
 }
 
 const handlerStopRobot = (item) => {
-  Robot.closeContent(item)
+  Robot.closeConnect(item)
 }
 
 const onCreateRobot = () => {

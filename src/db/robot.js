@@ -91,6 +91,15 @@ class RobotDB {
       return ResultUtil.failure()
     }
   }
+
+  static async updateRobotContent(param) {
+    const result = await db.execute('UPDATE robot set robotContent=$1 where id = $2', [param.robotContent, param.id])
+    if (result) {
+      return ResultUtil.success(result)
+    } else {
+      return ResultUtil.failure()
+    }
+  }
 }
 
 export default RobotDB

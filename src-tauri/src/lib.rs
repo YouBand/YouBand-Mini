@@ -6,8 +6,11 @@ use tauri::{Manager, WindowEvent};
 use cmd::{user_cmd,sys_cmd,web_cmd};
 use tauri_plugin_autostart::MacosLauncher;
 
+use std::sync::Arc;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let state = Arc::new(webserver::AppState::default());
     tauri::Builder::default()
         .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(vec!["--flag1", "--flag2"])))
         .plugin(tauri_plugin_shell::init())
@@ -36,6 +39,7 @@ pub fn run() {
             }
             _ => (),
         })
+        .manage(state)
         .invoke_handler(tauri::generate_handler![
             user_cmd::get_user_info,
             user_cmd::save_user_info,

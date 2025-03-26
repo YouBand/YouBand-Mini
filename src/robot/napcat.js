@@ -10,7 +10,7 @@ const robotStore = useRobotStore()
 class NapCatRobot {
   static connects = new Map()
 
-  static async content(param) {
+  static async connect(param) {
     if (NapCatRobot.connects.get(param.id)) {
       return
     }
@@ -29,7 +29,7 @@ class NapCatRobot {
       (msg) => {
         if (typeof msg === 'string') {
           NapCatRobot.crateRecord(param.id, RecordType.Error, msg)
-          NapCatRobot.closeContent(param)
+          NapCatRobot.closeConnect(param)
           return
         }
         if (msg.type !== 'Close') {
@@ -37,7 +37,7 @@ class NapCatRobot {
         }
       },
       (e) => {
-        NapCatRobot.closeContent(param)
+        NapCatRobot.closeConnect(param)
         robotStore.setRobotStatus(param.id, RobotStatus.Error)
         NapCatRobot.crateRecord(param.id, RecordType.Error, e)
       }
@@ -48,7 +48,7 @@ class NapCatRobot {
     })
   }
 
-  static async closeContent(param) {
+  static async closeConnect(param) {
     const connectInfo = NapCatRobot.connects.get(param.id)
     if (connectInfo) {
       connectInfo.ws.disconnect()

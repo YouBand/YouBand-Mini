@@ -1,21 +1,23 @@
 import NapCatRobot from '@/robot/napcat.js'
+import GewechatRobot from '@/robot/gewechat.js'
 
 class Robot {
   static robots = {
-    napcat: NapCatRobot
+    napcat: NapCatRobot,
+    gewechat: GewechatRobot
   }
 
-  static async content(item) {
+  static async connect(item, modal) {
     const robot = Robot.robots[item.type]
     if (robot) {
-      return robot.content(item)
+      return robot.connect(item, modal)
     }
   }
 
-  static async closeContent(item) {
+  static async closeConnect(item) {
     const robot = Robot.robots[item.type]
     if (robot) {
-      return robot.closeContent(item)
+      return robot.closeConnect(item)
     }
   }
 }
