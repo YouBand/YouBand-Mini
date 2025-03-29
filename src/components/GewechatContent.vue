@@ -1,7 +1,9 @@
 <template>
   <div class="gewechat-container">
     <div class="text-[20px]">{{ isScan ? '扫码成功，请点击确认' : '扫码登录微信' }}</div>
-    <n-qr-code v-if="qr" :size="150" :value="qr" type="svg" />
+    <div class="flex">
+      <n-qr-code style="box-sizing: content-box" v-if="qr" :size="120" :value="qr" type="svg" />
+    </div>
     <div v-if="isQrError" class="mt-[30px] text-[var(--error-color)]">二维码生成错误，请查看记录</div>
     <div v-if="isError" class="mt-[15px] text-[var(--error-color)]">错误，请查看记录</div>
     <div v-if="isLogin" class="mt-[30px]">
@@ -231,5 +233,6 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: var(--primary-text-color);
 }
 </style>
