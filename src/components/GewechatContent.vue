@@ -3,7 +3,7 @@
     <div class="text-[20px]">{{ isScan ? '扫码成功，请点击确认' : '扫码登录微信' }}</div>
     <n-qr-code v-if="qr" :size="150" :value="qr" type="svg" />
     <div v-if="isQrError" class="mt-[30px] text-[var(--error-color)]">二维码生成错误，请查看记录</div>
-    <div v-if="isError" class="mt-[20px] text-[var(--error-color)]">错误，请查看记录</div>
+    <div v-if="isError" class="mt-[15px] text-[var(--error-color)]">错误，请查看记录</div>
     <div v-if="isLogin" class="mt-[30px]">
       您已登录
       <n-a @click="handlerLogout">点击退出登录</n-a>
@@ -63,7 +63,7 @@ const handlerGetGewechatToken = () => {
 
 //获取二维码
 const handlerGetLoginQrCode = () => {
-  const appId = props.info.appId ?? ''
+  const appId = localInfo.appId ?? ''
   return HttpUtil.send({
     url: props.info.url + '/v2/api' + '/login/getLoginQrCode',
     method: 'POST',
@@ -84,7 +84,7 @@ const handlerGetLoginQrCode = () => {
         // 获取扫描结果
         timer = setInterval(() => {
           handlerCheckLogin()
-        }, 3000)
+        }, 5000)
       } else {
         isQrError.value = true
         handlerCreateErrorRecord(res)
@@ -98,11 +98,11 @@ const handlerGetLoginQrCode = () => {
 
 //检查是否在线
 const handlerCheckOnline = async () => {
-  if (!props.info.appId) return false
+  if (!localInfo.appId) return false
   return HttpUtil.send({
     url: props.info.url + '/v2/api' + '/login/checkOnline',
     method: 'POST',
-    data: { appId: props.info.appId },
+    data: { appId: localInfo.appId },
     headers: {
       'X-GEWE-TOKEN': token.value
     }
@@ -126,7 +126,7 @@ const handlerCheckLogin = async () => {
   return HttpUtil.send({
     url: props.info.url + '/v2/api' + '/login/checkLogin',
     method: 'POST',
-    data: { appId: props.info.appId, uuid: uuid.value },
+    data: { appId: localInfo.appId, uuid: uuid.value },
     headers: {
       'X-GEWE-TOKEN': token.value
     }
@@ -134,6 +134,9 @@ const handlerCheckLogin = async () => {
     .then((res) => {
       if (res.ret === 200) {
         if (res.data.status === 2) {
+          if (timer) {
+            clearInterval(timer)
+          }
           //登录成功
           emit('login', localInfo)
         } else if (res.data.status === 1) {
@@ -153,7 +156,7 @@ const handlerLogout = () => {
   return HttpUtil.send({
     url: props.info.url + '/v2/api' + '/login/logout',
     method: 'POST',
-    data: { appId: props.info.appId },
+    data: { appId: localInfo.appId },
     headers: {
       'X-GEWE-TOKEN': token.value
     }
@@ -200,7 +203,11 @@ onMounted(async () => {
   }
   await handlerGetGewechatToken()
   handlerSetCallback()
-  isLogin.value = await handlerCheckOnline()
+  if (!localInfo.appId) {
+    isLogin.value = false
+  } else {
+    isLogin.value = await handlerCheckOnline()
+  }
   if (!isLogin.value) {
     // 获取二维码
     handlerGetLoginQrCode()
