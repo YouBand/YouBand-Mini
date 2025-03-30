@@ -5,6 +5,7 @@ import VolcAI from '@/ai/volc.js'
 import RecordApi from '@/api/record.js'
 
 class AI {
+  static bugMsg = '好像有只bug在开派对？请检查配置信息后重试~'
   static ais = {
     deepseek: DeepSeekAI,
     ollama: OllamakAI,
@@ -14,7 +15,7 @@ class AI {
 
   static async getResponseContent(roleCharacter, modelContent, message, keyInfo, context) {
     //根据key获取上下文
-    if (!context || context.length <= 0) {
+    if (!context) {
       let result = await RecordApi.context({ produceId: keyInfo.produceId, targetKey: keyInfo.targetKey, num: 15 })
       context = result.data
     }

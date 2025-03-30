@@ -47,6 +47,8 @@ const props = defineProps({
   }
 
   &.error {
+    color: var(--primary-text-color);
+
     &:hover {
       color: #fff;
       background-color: var(--error-color);

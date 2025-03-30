@@ -1,4 +1,5 @@
 import HttpUtil from '@/utils/http.js'
+import AI from '@/ai/ai.js'
 
 class OllamakAI {
   static async getResponseContent(roleCharacter, modelContent, context, message) {
@@ -21,7 +22,7 @@ class OllamakAI {
     })
       .then((res) => res['message']['content'])
       .catch(() => {
-        return '好像有只bug在开派对？我正在驱散它们，请稍后重试~'
+        return AI.bugMsg
       })
   }
 }

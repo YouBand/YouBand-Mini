@@ -17,6 +17,17 @@
             </div>
           </div>
           <div class="flex gap-[5px] text-[var(--minor-text-color)] justify-end w-full lg:w-auto">
+            <n-popover trigger="hover">
+              <template #trigger>
+                <icon-hover-button
+                  @click="() => handlerConnectedness(item)"
+                  type="theme"
+                  style="width: 28px; height: 28px; font-size: 18px">
+                  <Icon icon="solar:heart-pulse-bold" />
+                </icon-hover-button>
+              </template>
+              <span>连通检测</span>
+            </n-popover>
             <icon-hover-button
               @click="() => handlerEditModel(item)"
               type="theme"
@@ -102,6 +113,28 @@
         </template>
       </n-card>
     </n-modal>
+    <!--模型连通性-->
+    <n-modal v-model:show="showConnectModal" :mask-closable="false" :close-on-esc="false">
+      <n-card
+        style="width: 500px"
+        title="模型连通性"
+        :bordered="false"
+        footer-class="flex justify-between gap-[10px] items-center"
+        class="text-[var(--primary-text-color)]">
+        <template #header-extra>
+          <icon-hover-button type="error" @click="showConnectModal = false">
+            <Icon icon="carbon:close" />
+          </icon-hover-button>
+        </template>
+        <div v-if="!connectResultMsg" class="flex flex-col justify-center items-center p-[10px]">
+          <n-spin size="medium" />
+          <div>正在请求中</div>
+        </div>
+        <n-alert v-if="connectResultMsg" :type="Ai.bugMsg === connectResultMsg ? 'error' : 'info'" :show-icon="false">
+          {{ connectResultMsg }}
+        </n-alert>
+      </n-card>
+    </n-modal>
   </div>
 </template>
 <script setup>
@@ -111,6 +144,7 @@ import ModelApi from '@/api/model.js'
 import { onMounted } from 'vue'
 import { useDialog } from 'naive-ui'
 import Empty from '@/components/Empty.vue'
+import Ai from '@/ai/ai.js'
 
 const showAddModelModal = ref(false)
 const modelInfo = ref({})
@@ -119,6 +153,8 @@ const addModelTypeContent = ref({})
 const modelData = ref([])
 const isEditModel = ref(false)
 const dialog = useDialog()
+const showConnectModal = ref(false)
+const connectResultMsg = ref('')
 
 const modelManuData = [
   {
@@ -347,6 +383,14 @@ const onCreateModel = () => {
         })
       }
     }
+  })
+}
+
+const handlerConnectedness = async (item) => {
+  connectResultMsg.value = ''
+  showConnectModal.value = true
+  Ai.getResponseContent('', JSON.parse(item.modelContent), '你好', null, []).then((res) => {
+    connectResultMsg.value = res
   })
 }
 
