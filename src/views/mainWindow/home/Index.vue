@@ -143,6 +143,12 @@ const navigations = [
     activeIcon: 'solar:black-hole-line-duotone'
   },
   {
+    label: '插件',
+    path: '/home/plug',
+    icon: 'solar:plug-circle-broken',
+    activeIcon: 'solar:plug-circle-bold'
+  },
+  {
     label: '人物角色',
     path: '/home/role',
     icon: 'solar:users-group-rounded-line-duotone',

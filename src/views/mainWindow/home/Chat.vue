@@ -234,12 +234,12 @@ const onSendMsg = async () => {
     type: RecordType.Receive,
     recordContent: msgInputValue.value
   }
-  await RecordApi.create(msg)
   recordData.value = [msg, ...recordData.value]
   // 回复消息
   Ai.getResponseContent(roleCharacter, modelContent, msgInputValue.value, {
     produceId: selectedChatInfo.value.id
-  }).then((res) => {
+  }).then(async (res) => {
+    await RecordApi.create(msg)
     msg = {
       id: nanoid(),
       produceId: selectedChatInfo.value.id,

@@ -51,6 +51,35 @@
     },
     "websocket:default",
     "shell:default",
+    "shell:allow-spawn",
+    "shell:allow-execute",
+    "shell:allow-stdin-write",
+    "shell:allow-kill",
+    {
+      "identifier": "shell:allow-spawn",
+      "allow": [
+        {
+          "name": "uvx",
+          "cmd": "./tools/uvx",
+          "args": true
+        },
+        {
+          "name": "bun",
+          "cmd": "./tools/bun",
+          "args": true
+        },
+        {
+          "name": "cmd",
+          "cmd": "cmd",
+          "args": true
+        },
+        {
+          "name": "sh",
+          "cmd": "sh",
+          "args": true
+        }
+      ]
+    },
     "autostart:allow-enable",
     "autostart:allow-disable",
     "autostart:allow-is-enabled"

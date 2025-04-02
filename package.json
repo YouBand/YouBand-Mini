@@ -1,7 +1,7 @@
 {
   "name": "youband-mini",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@eslint/js": "^9.21.0",
+    "@modelcontextprotocol/sdk": "^1.8.0",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-autostart": "^2.2.0",
     "@tauri-apps/plugin-http": "^2.4.0",

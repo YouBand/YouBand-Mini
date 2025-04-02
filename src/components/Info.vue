@@ -1,7 +1,7 @@
 <template>
   <n-tooltip trigger="hover">
     <template #trigger>
-      <Icon class="icon" icon="solar:info-circle-line-duotone" />
+      <Icon class="icon" icon="solar:question-circle-linear" />
     </template>
     <div>
       <slot></slot>
@@ -17,5 +17,6 @@ import { Icon } from '@iconify/vue'
   color: rgba(var(--primary-color));
   display: inline-block;
   font-size: 16px;
+  margin-left: 5px;
 }
 </style>

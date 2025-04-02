@@ -1,9 +1,9 @@
+import { Client } from '@/mcp/client.js'
 import HttpUtil from '@/utils/http.js'
 import AI from '@/ai/ai.js'
-import { Client } from '@/mcp/client.js'
 
-class OllamakAI {
-  static async getResponseContent(roleCharacter, modelContent, context, message) {
+class AiBase {
+  static async openAI(url, roleCharacter, modelContent, context, message) {
     //获取tools
     let tools = await Client.toolListAll()
     let requestTools = []
@@ -21,10 +21,8 @@ class OllamakAI {
       messages: [{ role: 'system', content: roleCharacter }, ...context, { role: 'user', content: message }],
       model: modelContent.model,
       stream: false,
-      options: {
-        num_ctx: modelContent.maxToken,
-        temperature: modelContent.temperature
-      }
+      max_tokens: modelContent.maxToken,
+      temperature: modelContent.temperature
     }
     if (requestTools && requestTools.length > 0) {
       data.tools = requestTools
@@ -32,14 +30,14 @@ class OllamakAI {
     let replyMsg = ''
     let count = 0
     while (!replyMsg) {
-      let msg = await this.send(modelContent, data)
+      let msg = await this.send(url, data, modelContent.apiKey)
       if (typeof msg === 'string' || msg instanceof String) {
         replyMsg = msg
         break
       }
-      if (msg?.['tool_calls'] && msg?.['tool_calls'].length > 0) {
+      if (msg?.['finish_reason'] === 'tool_calls') {
         //调用tools
-        let callTools = msg?.['tool_calls']
+        let callTools = msg?.message?.['tool_calls']
         let callResult = await Client.callTools(callTools)
         data.messages.push(msg?.message)
         delete data.tools
@@ -47,7 +45,7 @@ class OllamakAI {
           data.messages.push({ role: 'tool', content: value.content, tool_call_id: value.callId })
         })
       } else {
-        replyMsg = msg?.content || '好像什么都没有哦~'
+        replyMsg = msg?.message?.content || '好像什么都没有哦~'
       }
       count++
       if (count > 3) {
@@ -57,17 +55,17 @@ class OllamakAI {
     return replyMsg
   }
 
-  static send(modelContent, data) {
+  static send(url, data, apiKey) {
     return HttpUtil.send({
-      url: `${modelContent.url}/api/chat`,
+      url: url,
       data: data,
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${modelContent.apiKey}`
+        Authorization: `Bearer ${apiKey}`
       }
     })
       .then((res) => {
-        return res['message']
+        return res['choices'][0]
       })
       .catch(() => {
         return AI.bugMsg
@@ -75,4 +73,4 @@ class OllamakAI {
   }
 }
 
-export default OllamakAI
+export default AiBase

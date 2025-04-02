@@ -15,15 +15,17 @@ import { crateInit } from '@/db/init.js'
 import { useSettingStore } from '@/stores/useSettingStore.js'
 import GewechatRobot from '@/robot/gewechat.js'
 import { invoke } from '@tauri-apps/api/core'
+import Mcp from '@/mcp/mcp.js'
 
 const settingStore = useSettingStore()
 onBeforeMount(async () => {
   //数据库相关
   await crateInit()
   await settingStore.setTheme(settingStore.general.theme)
+  Mcp.startAll()
 })
 
-onMounted(() => {
+onMounted(async () => {
   //开启web服务
   invoke('start_webserver', { port: parseInt(settingStore.general.callbackPort) }).then(() => {
     console.log('web服务开始运行')
