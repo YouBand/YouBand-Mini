@@ -28,6 +28,7 @@ class AiBase {
       data.tools = requestTools
     }
     let replyMsg = ''
+    let msgStr = ''
     let count = 0
     while (!replyMsg) {
       let msg = await this.send(url, data, modelContent.apiKey)
@@ -40,15 +41,17 @@ class AiBase {
         let callTools = msg?.message?.['tool_calls']
         let callResult = await Client.callTools(callTools)
         data.messages.push(msg?.message)
-        delete data.tools
         callResult.map((value) => {
           data.messages.push({ role: 'tool', content: value.content, tool_call_id: value.callId })
         })
+        if (msg?.message?.content) {
+          msgStr += msg?.message?.content + '\n'
+        }
       } else {
-        replyMsg = msg?.message?.content || '好像什么都没有哦~'
+        replyMsg = msgStr + msg?.message?.content || '好像什么都没有哦~'
       }
       count++
-      if (count > 3) {
+      if (count > 10) {
         replyMsg = '好像还没有结果，算不动了~'
       }
     }
