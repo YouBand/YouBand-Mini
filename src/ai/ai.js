@@ -3,6 +3,7 @@ import OllamakAI from '@/ai/ollama.js'
 import QwenAI from '@/ai/qwen.js'
 import VolcAI from '@/ai/volc.js'
 import SiliconFlowAI from '@/ai/siliconflow.js'
+import XunFeiAI from '@/ai/xunfei.js'
 import RecordApi from '@/api/record.js'
 
 class AI {
@@ -12,7 +13,8 @@ class AI {
     ollama: OllamakAI,
     qwen: QwenAI,
     volc: VolcAI,
-    siliconflow: SiliconFlowAI
+    siliconflow: SiliconFlowAI,
+    xunfei: XunFeiAI,
   }
 
   static async getResponseContent(roleCharacter, modelContent, message, keyInfo, context) {
