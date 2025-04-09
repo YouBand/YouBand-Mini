@@ -319,7 +319,69 @@ const modelManuData = [
       name: '如何使用火山引擎',
       url: 'https://www.volcengine.com/'
     }
-  }
+  },
+  {
+    avatar: '/siliconflow.svg',
+    name: 'SiliconFlow',
+    type: 'siliconflow',
+    formField: [
+      { key: 'name', name: '名称', type: 'input', placeholder: '请输入名称' },
+      {
+        key: 'apiKey',
+        name: 'API-Key',
+        type: 'input',
+        placeholder: '请输入SiliconFlow API密钥'
+      },
+      { key: 'model', name: '模型', type: 'input', placeholder: '例如：deepseek-ai/DeepSeek-R1-Distill-Qwen-7B' },
+      {
+        key: 'temperature',
+        name: '温度',
+        type: 'slider',
+        max: 2,
+        min: 0,
+        step: 0.1,
+        defaultValue: 1.3
+      },
+      { key: 'maxToken', name: '最大Token数', type: 'slider', max: 4000, min: 20, step: 1, defaultValue: 2000 }
+    ],
+    formRules: {
+      apiKey: [{ required: true, message: '请输入API-Key' }],
+      name: [{ required: true, message: '请输入名称' }],
+      model: [{ required: true, message: '请输入模型名称' }]
+    },
+    operate: { name: 'SiliconFlow文档', url: 'https://docs.siliconflow.com/' }
+  },
+  {
+    avatar: '/xunfei.svg',
+    name: '讯飞星火',
+    type: 'xunfei',
+    formField: [
+      { key: 'name', name: '名称', type: 'input', placeholder: '请输入名称' },
+      {
+        key: 'apiKey',
+        name: 'API-Key',
+        type: 'input',
+        placeholder: '请输入讯飞星火 API密钥'
+      },
+      { key: 'model', name: '模型', type: 'input', placeholder: '例如：lite' },
+      {
+        key: 'temperature',
+        name: '温度',
+        type: 'slider',
+        max: 2,
+        min: 0,
+        step: 0.1,
+        defaultValue: 0.5
+      },
+      { key: 'maxToken', name: '最大Token数', type: 'slider', max: 4000, min: 20, step: 1, defaultValue: 2000 }
+    ],
+    formRules: {
+      apiKey: [{ required: true, message: '请输入API-Key' }],
+      name: [{ required: true, message: '请输入名称' }],
+      model: [{ required: true, message: '请输入模型名称' }]
+    },
+    operate: { name: '讯飞星火文档', url: 'https://www.xfyun.cn/doc/' }
+  },
 ]
 
 const handlerAddModel = (item) => {
