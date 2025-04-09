@@ -36,7 +36,7 @@ class AiBase {
         replyMsg = msg
         break
       }
-      if (msg?.['finish_reason'] === 'tool_calls') {
+      if (msg?.['finish_reason'] === 'tool_calls' || msg?.message?.['tool_calls']) {
         //调用tools
         let callTools = msg?.message?.['tool_calls']
         let callResult = await Client.callTools(callTools)
