@@ -381,7 +381,7 @@ const modelManuData = [
       model: [{ required: true, message: '请输入模型名称' }]
     },
     operate: { name: '讯飞星火文档', url: 'https://www.xfyun.cn/doc/' }
-  },
+  }
 ]
 
 const handlerAddModel = (item) => {
