@@ -1,5 +1,28 @@
 <template>
   <div class="general-container">
+    <div class="general-key">模型</div>
+
+    <!-- 模型 -->
+    <div class="general-item">
+      <div class="general-item-key">模型上下文数</div>
+      <div class="general-item-value">
+        <n-input-number
+          v-model:value="nCtxRounds"
+          :min="0"
+          :max="100"
+          size="small"
+          placeholder=""
+          @blur="
+            () => {
+              settingStore.setNCtxRounds(nCtxRounds)
+              if (!nCtxRounds) {
+                nCtxRounds = settingStore.general['nCtxRounds']
+              }
+            }
+          " />
+      </div>
+    </div>
+
     <div class="general-key">Gewechat回调信息</div>
 
     <!-- 回调端口 -->
@@ -23,7 +46,10 @@
 
     <!-- 回调IP -->
     <div class="general-item">
-      <div class="general-item-key">回调IP<info>注意：需Gewechat服务可以访问到该IP</info></div>
+      <div class="general-item-key">
+        回调IP
+        <info>注意：需Gewechat服务可以访问到该IP</info>
+      </div>
       <div class="general-item-value" style="width: auto">
         <n-input
           size="small"
@@ -95,6 +121,7 @@ const isMenuFold = createStoreBinding('isMenuFold', 'setIsMenuFold')
 
 const callbackIp = ref(settingStore.general['callbackIp'])
 const callbackPort = ref(settingStore.general['callbackPort'])
+const nCtxRounds = ref(settingStore.general['nCtxRounds'])
 
 const closeOptions = [
   { label: '隐藏', value: 'hidden' },

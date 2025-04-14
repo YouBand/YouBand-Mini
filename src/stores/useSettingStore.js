@@ -9,7 +9,8 @@ export const useSettingStore = defineStore('setting', {
       theme: 'light', //dark,light,system
       isMenuFold: true,
       callbackIp: 'http://127.0.0.1',
-      callbackPort: '5222'
+      callbackPort: '5222',
+      nCtxRounds: 15
     }
   }),
   actions: {
@@ -43,6 +44,13 @@ export const useSettingStore = defineStore('setting', {
         this.general.callbackPort = port.toString().replace(/\D/g, '')
       } else {
         this.general.callbackPort = '5222'
+      }
+    },
+    setNCtxRounds(num) {
+      if (num <= 100 && num > -1) {
+        this.general.nCtxRounds = num
+      } else {
+        this.general.nCtxRounds = 15
       }
     }
   },

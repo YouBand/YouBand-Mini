@@ -90,6 +90,7 @@ const setItemData = [
     background-color: var(--nav-bg);
     border-radius: 0 8px 8px 0;
     padding: 10px;
+    overflow-x: hidden;
   }
 }
 </style>
