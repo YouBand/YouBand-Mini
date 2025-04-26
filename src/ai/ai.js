@@ -6,6 +6,7 @@ import SiliconFlowAI from '@/ai/siliconflow.js'
 import XunFeiAI from '@/ai/xunfei.js'
 import RecordApi from '@/api/record.js'
 import { useSettingStore } from '@/stores/useSettingStore.js'
+import CommonAI from '@/ai/common.js'
 
 class AI {
   static bugMsg = '好像有只bug在开派对？请检查配置信息后重试~'
@@ -15,7 +16,8 @@ class AI {
     qwen: QwenAI,
     volc: VolcAI,
     siliconflow: SiliconFlowAI,
-    xunfei: XunFeiAI
+    xunfei: XunFeiAI,
+    common: CommonAI
   }
 
   static async getResponseContent(roleCharacter, modelContent, message, keyInfo, context) {
